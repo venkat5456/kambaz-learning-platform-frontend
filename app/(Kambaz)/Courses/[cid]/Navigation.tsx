@@ -8,10 +8,7 @@ interface CourseNavigationProps {
 
 export default function CourseNavigation({ cid }: CourseNavigationProps) {
   return (
-    <div
-      id="wd-courses-navigation"
-      className="wd list-group fs-5 rounded-0"
-    >
+    <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">
       <Link
         href={`/Courses/${cid}/Home`}
         id="wd-course-home-link"
