@@ -1,0 +1,99 @@
+/* Reset */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body * {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Offset main content when sidebar is visible */
+@media (min-width: 768px) {
+  #wd-kambaz .wd-main-content-offset {
+    padding-left: 140px !important; /* Sidebar width (110) + some spacing */
+  }
+}
+
+/* Course Navigation Sidebar Styling */
+#wd-courses-navigation .list-group-item {
+  background-color: white;
+  color: red;
+  border: none;
+  padding: 12px 16px;
+}
+
+#wd-courses-navigation .list-group-item:hover {
+  background-color: #f8f9fa;
+  color: darkred;
+}
+
+#wd-courses-navigation .list-group-item.active {
+  background-color: white !important;
+  color: red !important;
+  border-left: 4px solid black !important;
+  font-weight: bold;
+}
+
+/* Apply custom styling to Course Navigation sidebar */
+.list-group.wd > .list-group-item {
+  background-color: white;
+  color: red;
+  border: none;
+  padding: 12px 16px;
+}
+
+.list-group.wd > .list-group-item:hover {
+  background-color: #f8f9fa;
+  color: darkred;
+}
+
+.list-group.wd > .list-group-item.active {
+  color: black;                     /* Text color when active */
+  background-color: white;          /* Keep white background */
+  border-left: 3px solid black !important; /* Black border on active link */
+  font-weight: bold;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body * {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (min-width: 768px) {
+  #wd-kambaz .wd-main-content-offset {
+    padding-left: 140px !important;
+  }
+}
+
+/* Override Bootstrap button + bg */
+.btn-secondary {
+  --bs-btn-color: #000 !important;
+  --bs-btn-bg: #c7cdd1 !important;
+  --bs-btn-border-color: #c7cdd1 !important;
+  --bs-btn-hover-color: #fff !important;
+}
+
+.bg-secondary {
+  --bs-secondary-rgb: 199, 205, 209;
+}
+
+.list-group-item {
+  --bs-list-group-border-color: gray;
+}
+
+.wd-lesson {
+  border-left: 3px solid green !important;
+}
+
+
+/* Green border for lessons */
+.wd-lesson {
+  border-left: 3px solid green !important;
+}
+
+

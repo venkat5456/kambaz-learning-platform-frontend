@@ -1,73 +1,66 @@
 "use client";
 
-export default function Modules() {
+import { ListGroup, ListGroupItem } from "react-bootstrap";
+import ModulesControls from "./ModulesControls";
+import LessonControlButtons from "./LessonControlButtons";
+import ModuleControlButtons from "./ModuleControlButtons";
+
+export default function ModulesPage() {
   return (
-    <div id="wd-modules">
-      <h2>Course 1234</h2>
-      <hr />
+    <div className="p-3">
+      <ModulesControls />
+      <br />
+      <br />
+      <br />
+      <br />
 
-      {/* Top Buttons */}
-      <div>
-        <button>Collapse All</button>
-        <button>View Progress</button>
-        <select>
-          <option>Publish All</option>
-        </select>
-        <button>+ Module</button>
-      </div>
+      <ListGroup className="rounded-0" id="wd-modules">
+        {/* Week 1 */}
+        <ListGroupItem className="wd-module p-0 mb-5 fs-5 border-gray">
+          {/* Module title row with controls */}
+          <div className="wd-title p-3 ps-2 bg-secondary d-flex justify-content-between align-items-center">
+            Week 1
+            <ModuleControlButtons />
+          </div>
 
-      {/* Module 1 */}
-      <ul>
-        <li>
-          Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda
-          <ul>
-            <li>
+          {/* Lessons */}
+          <ListGroup className="wd-lessons rounded-0">
+            <ListGroupItem className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
               LEARNING OBJECTIVES
-              <ul>
-                <li>Introduction to the course</li>
-                <li>Learn what is Web Development</li>
-              </ul>
-            </li>
-            <li>
-              READING
-              <ul>
-                <li>Full Stack Developer - Chapter 1 - Introduction</li>
-                <li>Full Stack Developer - Chapter 2 - Creating Us</li>
-              </ul>
-            </li>
-            <li>
-              SLIDES
-              <ul>
-                <li>Introduction to Web Development</li>
-                <li>Creating an HTTP server with Node.js</li>
-                <li>Creating a React Application</li>
-              </ul>
-            </li>
-          </ul>
-        </li>
+              <LessonControlButtons />
+            </ListGroupItem>
+            <ListGroupItem className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
+              Introduction to the course
+              <LessonControlButtons />
+            </ListGroupItem>
+            <ListGroupItem className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
+              Learn what is Web Development
+              <LessonControlButtons />
+            </ListGroupItem>
+          </ListGroup>
+        </ListGroupItem>
 
-        <li>
-          Week 1, Lecture 2 - Formatting User Interfaces with HTML
-          <ul>
-            <li>
-              LEARNING OBJECTIVES
-              <ul>
-                <li>Learn how to create user interfaces with HTML</li>
-                <li>Deploy the assignment to Netlify</li>
-              </ul>
-            </li>
-            <li>
-              SLIDES
-              <ul>
-                <li>Introduction to HTML and the DOM</li>
-                <li>Formatting Web content with Headings and Paragraphs</li>
-                <li>Formatting content with Lists and Tables</li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul>
+        {/* Week 2 */}
+        <ListGroupItem className="wd-module p-0 mb-5 fs-5 border-gray">
+          {/* Module title row with controls */}
+          <div className="wd-title p-3 ps-2 bg-secondary d-flex justify-content-between align-items-center">
+            Week 2
+            <ModuleControlButtons />
+          </div>
+
+          {/* Lessons */}
+          <ListGroup className="wd-lessons rounded-0">
+            <ListGroupItem className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
+              LESSON 1
+              <LessonControlButtons />
+            </ListGroupItem>
+            <ListGroupItem className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
+              LESSON 2
+              <LessonControlButtons />
+            </ListGroupItem>
+          </ListGroup>
+        </ListGroupItem>
+      </ListGroup>
     </div>
   );
 }
-

@@ -1,25 +1,20 @@
-import Modules from "../Modules/page";
-import CourseStatus from "./Status";
+"use client";
+
+import Modules from "./Modules";
+import CourseStatus from "./CourseStatus";
 
 export default function Home() {
   return (
-    <div id="wd-home">
-      <table width="100%">
-        <tbody>
-          <tr>
-            {/* Main Content: Modules */}
-            <td valign="top" width="70%">
-              <Modules />
-            </td>
+    <div id="wd-home" className="d-flex">
+      {/* Main content */}
+      <div className="flex-fill me-3">
+        <Modules />
+      </div>
 
-            {/* Sidebar: Course Status */}
-            <td valign="top" width="30%">
-              <CourseStatus />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Course Status (only visible on lg and above) */}
+      <div className="d-none d-lg-block" style={{ width: "250px" }}>
+        <CourseStatus />
+      </div>
     </div>
   );
 }
-

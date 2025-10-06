@@ -1,20 +1,62 @@
 "use client";
+
 import Link from "next/link";
 
 export default function CourseNavigation() {
   return (
-    <div id="wd-course-navigation">
-      <ul>
-        <li><Link href="Home">Home</Link></li>
-        <li><Link href="Modules">Modules</Link></li>
-        <li><Link href="Piazza">Piazza</Link></li>
-        <li><Link href="Zoom">Zoom</Link></li>
-        <li><Link href="Assignments">Assignments</Link></li>
-        <li><Link href="Quizzes">Quizzes</Link></li>
-        <li><Link href="Grades">Grades</Link></li>
-      </ul>
+    <div
+      id="wd-courses-navigation"
+      className="wd list-group fs-5 rounded-0"
+    >
+      <Link
+        href="/Courses/1234/Home"
+        id="wd-course-home-link"
+        className="list-group-item active border-0"
+      >
+        Home
+      </Link>
+      <Link
+        href="/Courses/1234/Modules"
+        id="wd-course-modules-link"
+        className="list-group-item border-0"
+      >
+        Modules
+      </Link>
+      <Link
+        href="/Courses/1234/Piazza"
+        id="wd-course-piazza-link"
+        className="list-group-item border-0"
+      >
+        Piazza
+      </Link>
+      <Link
+        href="/Courses/1234/Zoom"
+        id="wd-course-zoom-link"
+        className="list-group-item border-0"
+      >
+        Zoom
+      </Link>
+      <Link
+        href="/Courses/1234/Assignments"
+        id="wd-course-assignments-link"
+        className="list-group-item border-0"
+      >
+        Assignments
+      </Link>
+      <Link
+        href="/Courses/1234/Quizzes"
+        id="wd-course-quizzes-link"
+        className="list-group-item border-0"
+      >
+        Quizzes
+      </Link>
+      <Link
+        href="/Courses/1234/People/Table"
+        id="wd-course-people-link"
+        className="list-group-item border-0"
+      >
+        People
+      </Link>
     </div>
   );
 }
-
-
