@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { FaAlignJustify } from "react-icons/fa";
-import CourseNavigation from "./Navigation"; // 👈 FIXED import
+import CourseNavigation from "./Navigation"; 
 
 export default function CoursesLayout({
   children,
@@ -26,7 +26,7 @@ export default function CoursesLayout({
       <div className="d-flex">
         {/* Sidebar navigation */}
         <div className="d-none d-md-block border-end me-3" style={{ width: "200px" }}>
-          <CourseNavigation cid={cid} /> {/* ✅ works now */}
+          <CourseNavigation cid={cid} /> 
         </div>
 
         {/* Main content */}

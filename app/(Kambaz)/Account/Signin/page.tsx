@@ -11,7 +11,7 @@ export default function Signin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/Dashboard"); // ✅ always go to Dashboard
+    router.push("/Dashboard"); 
   };
 
   return (

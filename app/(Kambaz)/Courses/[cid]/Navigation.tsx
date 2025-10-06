@@ -52,7 +52,7 @@ export default function CourseNavigation({ cid }: CourseNavigationProps) {
         Quizzes
       </Link>
       <Link
-        href={`/Courses/${cid}/People/Table`}
+        href={`/Courses/${cid}/People`}  
         id="wd-course-people-link"
         className="list-group-item border-0"
       >
