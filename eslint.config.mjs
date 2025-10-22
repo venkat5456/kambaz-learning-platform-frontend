@@ -19,6 +19,11 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+    rules: {
+      // 🔹 Disable or relax specific ESLint rules
+      "no-var": "off",         // allow use of var
+      "prefer-const": "off",   // allow let even if not reassigned
+    },
   },
 ];
 
