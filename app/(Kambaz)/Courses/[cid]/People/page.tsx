@@ -4,6 +4,24 @@ import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "next/navigation";
 import * as db from "../../../Database";
 
+// ✅ Define simple types instead of using `any`
+interface User {
+  _id: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  loginId?: string;
+  section?: string;
+  role?: string;
+  lastActivity?: string;
+  totalActivity?: string;
+}
+
+interface Enrollment {
+  user: string;
+  course: string;
+}
+
 export default function PeopleTable() {
   const { cid } = useParams();
   const { users, enrollments } = db;
@@ -27,14 +45,13 @@ export default function PeopleTable() {
         {/* ✅ Dynamic, data-driven table rows */}
         <tbody>
           {users
-            .filter((usr: any) =>
+            .filter((usr: User) =>
               enrollments.some(
-                (enrollment: any) =>
+                (enrollment: Enrollment) =>
                   enrollment.user === usr._id && enrollment.course === cid
               )
             )
-            .map((user: any) => {
-              // ✅ Handle multiple possible name key formats (first/last OR name)
+            .map((user: User) => {
               const displayName =
                 user.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
