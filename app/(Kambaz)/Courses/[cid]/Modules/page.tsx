@@ -8,12 +8,29 @@ import LessonControlButtons from "./LessonControlButtons";
 import ModulesControls from "./ModulesControls";
 import { BsGripVertical } from "react-icons/bs";
 
-export default function ModulesPage() {
-  const { cid } = useParams();               // e.g. "CS1234"
-  const modules = db.modules;                // all modules from modules.json
+// ✅ Define proper interfaces
+interface Lesson {
+  _id: string;
+  name: string;
+}
 
-  // 🔹 filter modules for the selected course
-  const filteredModules = modules.filter((m: any) => m.course === cid);
+interface Module {
+  _id: string;
+  course: string;
+  name: string;
+  lessons: Lesson[];
+}
+
+export default function ModulesPage() {
+  const { cid } = useParams(); // e.g., "CS1234"
+
+  // ✅ Safely cast JSON data
+  const modules: Module[] = db.modules as Module[];
+
+  // ✅ Filter modules by selected course
+  const filteredModules: Module[] = modules.filter(
+    (m: Module) => m.course === cid
+  );
 
   return (
     <div className="p-3">
@@ -27,7 +44,7 @@ export default function ModulesPage() {
         {filteredModules.length === 0 ? (
           <p>No modules found for this course.</p>
         ) : (
-          filteredModules.map((module: any, index: number) => (
+          filteredModules.map((module: Module, index: number) => (
             <ListGroupItem
               key={index}
               className="wd-module p-0 mb-5 fs-5 border-gray"
@@ -41,19 +58,23 @@ export default function ModulesPage() {
               </div>
 
               {/* Lessons inside the module */}
-              <ListGroup className="wd-lessons rounded-0">
-                {module.lessons.map((lesson: any, i: number) => (
-                  <ListGroupItem
-                    key={i}
-                    className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <BsGripVertical className="me-2 fs-3" /> {lesson.name}
-                    </div>
-                    <LessonControlButtons />
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
+              {module.lessons && module.lessons.length > 0 ? (
+                <ListGroup className="wd-lessons rounded-0">
+                  {module.lessons.map((lesson: Lesson, i: number) => (
+                    <ListGroupItem
+                      key={i}
+                      className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
+                    >
+                      <div>
+                        <BsGripVertical className="me-2 fs-3" /> {lesson.name}
+                      </div>
+                      <LessonControlButtons />
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              ) : (
+                <p className="p-3 text-muted">No lessons found in this module.</p>
+              )}
             </ListGroupItem>
           ))
         )}
