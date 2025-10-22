@@ -10,13 +10,13 @@ export default function Destructing() {
       <h2>Destructuring</h2>
       <h3>Object Destructuring</h3>
       const &#123; name, age &#125; =
-      &#123; name: "John", age: 25 &#125;
+     <p>&#123; name: &quot;John&quot;, age: 25 &#125;</p>
       <br /><br />
       name = {name}
       <br />
       age = {age}
       <h3>Array Destructuring</h3>
-      const [first, second, third] = ["one","two","three"]
+      <p>const [first, second, third] = [&quot;one&quot;,&quot;two&quot;,&quot;three&quot;]</p>
       <br /><br />
       first = {first}
       <br />

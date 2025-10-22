@@ -8,9 +8,24 @@ import Link from "next/link";
 import * as db from "../../../Database";
 import { useParams } from "next/navigation";
 
+// ✅ Define a clear interface for assignment data
+interface Assignment {
+  id: string;
+  course: string;
+  title: string;
+  description?: string;
+  points?: number;
+  available?: string;
+  due?: string;
+}
+
 export default function AssignmentsPage() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((a: any) => a.course === cid);
+
+  // ✅ Type cast db.assignments safely
+  const assignments: Assignment[] = (db.assignments as Assignment[]).filter(
+    (a) => a.course === cid
+  );
 
   return (
     <div id="wd-assignments" className="p-3">
@@ -50,11 +65,11 @@ export default function AssignmentsPage() {
           <span className="text-muted">40% of Total</span>
         </ListGroupItem>
 
-        {/* Dynamic Assignment Items */}
+        {/* ✅ Dynamic Assignment Items */}
         {assignments.length === 0 ? (
           <p className="p-3">No assignments found for this course.</p>
         ) : (
-          assignments.map((assignment: any) => (
+          assignments.map((assignment) => (
             <ListGroupItem
               key={assignment.id}
               className="wd-assignment d-flex justify-content-between align-items-center p-3"
@@ -78,8 +93,10 @@ export default function AssignmentsPage() {
                     {assignment.id}: {assignment.title}
                   </Link>
                   <div className="text-muted small">
-                    Multiple Modules | Not available until {assignment.available || "May 6 at 12:00am"} |{" "}
-                    Due {assignment.due || "May 13 at 11:59pm"} | {assignment.points || 100} pts
+                    Multiple Modules | Not available until{" "}
+                    {assignment.available || "May 6 at 12:00am"} | Due{" "}
+                    {assignment.due || "May 13 at 11:59pm"} |{" "}
+                    {assignment.points || 100} pts
                   </div>
                 </div>
               </div>

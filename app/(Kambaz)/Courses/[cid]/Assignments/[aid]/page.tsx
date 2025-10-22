@@ -5,10 +5,26 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import * as db from "../../../../Database";
 
+// ✅ Define a proper Assignment type
+interface Assignment {
+  id: string;
+  course: string;
+  title: string;
+  description?: string;
+  points?: number;
+  due?: string;
+  available?: string;
+}
+
 export default function EditAssignmentPage() {
   const { cid, aid } = useParams();
-  const assignment = db.assignments.find(
-    (a: any) => a.course === cid && a.id === aid
+
+  // ✅ Tell TypeScript the type of items in db.assignments
+  const assignments: Assignment[] = db.assignments as Assignment[];
+
+  // ✅ Use the correct field names and typed variable
+  const assignment = assignments.find(
+    (a) => a.course === cid && a.id === aid
   );
 
   if (!assignment) {
