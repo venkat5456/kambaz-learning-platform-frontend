@@ -1,26 +1,29 @@
-export default function BooleanVariables() {
-  const numberVariable = 123;
-const floatingPointNumber = 234.345;
+"use client";
 
-const true1 = true;
-const false1 = false;
-const false2 = true1 && false1;
-const true2 = true1 || false1;
-const true3 = !false2;
-const true4 = numberVariable === 123; // always use ===, not ==
-const true5 = floatingPointNumber !== 321.432;
-const false3 = numberVariable < 100;
+export default function BooleanVariables() {
+  const numberVariable: number = 123;
+  const floatingPointNumber: number = 234.345; // explicitly typed as number
+
+  const true1 = true;
+  const false1 = false;
+  const false2 = true1 && false1;
+  const true2 = true1 || false1;
+  const true3 = !false2;
+  const true4 = numberVariable === 123; // always use ===
+  const true5 = floatingPointNumber !== 321.432; // ✅ works now
+  const false3 = numberVariable < 100;
+
   return (
     <div id="wd-boolean-variables" className="p-3">
       <h4>Boolean Variables</h4>
-      true1 = {true1 + ""} <br />
-      false1 = {false1 + ""} <br />
-      false2 = {false2 + ""} <br />
-      true2 = {true2 + ""} <br />
-      true3 = {true3 + ""} <br />
-      true4 = {true4 + ""} <br />
-      true5 = {true5 + ""} <br />
-      false3 = {false3 + ""} <hr />
+      true1 = {String(true1)} <br />
+      false1 = {String(false1)} <br />
+      false2 = {String(false2)} <br />
+      true2 = {String(true2)} <br />
+      true3 = {String(true3)} <br />
+      true4 = {String(true4)} <br />
+      true5 = {String(true5)} <br />
+      false3 = {String(false3)} <hr />
     </div>
   );
 }
