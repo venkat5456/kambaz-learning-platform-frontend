@@ -1,0 +1,113 @@
+[
+  {
+    "course": "CS1234",
+    "name": "ReactJS Basics",
+    "lessons": [
+      { "name": "Intro to React and JSX" },
+      { "name": "Components and Props" },
+      { "name": "State and Lifecycle" }
+    ]
+  },
+  {
+    "course": "CS1234",
+    "name": "ReactJS Hooks",
+    "lessons": [
+      { "name": "useState and useEffect" },
+      { "name": "Custom Hooks" },
+      { "name": "Handling Side Effects" }
+    ]
+  },
+  {
+    "course": "CS1234",
+    "name": "React Routing",
+    "lessons": [
+      { "name": "Navigation with React Router" },
+      { "name": "Nested Routes" },
+      { "name": "Route Parameters" }
+    ]
+  },
+
+  {
+    "course": "CS5678",
+    "name": "Web Dev Tools Overview",
+    "lessons": [
+      { "name": "Next.js Basics" },
+      { "name": "TailwindCSS Essentials" },
+      { "name": "Project Structure and Setup" }
+    ]
+  },
+  {
+    "course": "CS5678",
+    "name": "Modern Deployment",
+    "lessons": [
+      { "name": "Deploying with Vercel" },
+      { "name": "Using AWS for Hosting" },
+      { "name": "Environment Variables" }
+    ]
+  },
+  {
+    "course": "CS5678",
+    "name": "Frontend Optimization",
+    "lessons": [
+      { "name": "Image Optimization" },
+      { "name": "Code Splitting" },
+      { "name": "Caching Strategies" }
+    ]
+  },
+
+  {
+    "course": "CS9012",
+    "name": "Java Programming Basics",
+    "lessons": [
+      { "name": "Data Types and Variables" },
+      { "name": "Conditionals and Loops" },
+      { "name": "Functions and Classes" }
+    ]
+  },
+  {
+    "course": "CS9012",
+    "name": "OOP Concepts",
+    "lessons": [
+      { "name": "Inheritance and Polymorphism" },
+      { "name": "Interfaces and Abstract Classes" },
+      { "name": "Encapsulation" }
+    ]
+  },
+  {
+    "course": "CS9012",
+    "name": "Design Patterns",
+    "lessons": [
+      { "name": "Singleton Pattern" },
+      { "name": "Factory Pattern" },
+      { "name": "Observer Pattern" }
+    ]
+  },
+
+  {
+    "course": "CS7890",
+    "name": "AI Fundamentals",
+    "lessons": [
+      { "name": "Introduction to AI" },
+      { "name": "Search Algorithms" },
+      { "name": "Knowledge Representation" }
+    ]
+  },
+  {
+    "course": "CS7890",
+    "name": "Neural Networks",
+    "lessons": [
+      { "name": "Perceptron Model" },
+      { "name": "Feedforward and Backpropagation" },
+      { "name": "Convolutional Networks" }
+    ]
+  },
+  {
+    "course": "CS7890",
+    "name": "Transformers and NLP",
+    "lessons": [
+      { "name": "Attention Mechanisms" },
+      { "name": "BERT and GPT Overview" },
+      { "name": "Applications of Transformers" }
+    ]
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "_id": "U101",
+    "firstName": "Dr. Emily",
+    "lastName": "Clark",
+    "loginId": "emily.clark",
+    "section": "CS1234.01",
+    "role": "Faculty",
+    "lastActivity": "2 hours ago",
+    "totalActivity": "14 hrs"
+  },
+  {
+    "_id": "U102",
+    "firstName": "Michael",
+    "lastName": "Lee",
+    "loginId": "mlee",
+    "section": "CS1234.01",
+    "role": "Student",
+    "lastActivity": "1 day ago",
+    "totalActivity": "7 hrs"
+  },
+  {
+    "_id": "U103",
+    "firstName": "Sophia",
+    "lastName": "Patel",
+    "loginId": "spatel",
+    "section": "CS1234.01",
+    "role": "Student",
+    "lastActivity": "3 hours ago",
+    "totalActivity": "5 hrs"
+  },
+  {
+    "_id": "U104",
+    "firstName": "Ethan",
+    "lastName": "Nguyen",
+    "loginId": "enguyen",
+    "section": "CS1234.01",
+    "role": "TA",
+    "lastActivity": "5 minutes ago",
+    "totalActivity": "12 hrs"
+  },
+  {
+    "_id": "U105",
+    "firstName": "Olivia",
+    "lastName": "Martinez",
+    "loginId": "omartinez",
+    "section": "CS1234.02",
+    "role": "Student",
+    "lastActivity": "10 minutes ago",
+    "totalActivity": "8 hrs"
+  },
+  {
+    "_id": "U106",
+    "firstName": "Liam",
+    "lastName": "Brown",
+    "loginId": "lbrown",
+    "section": "CS1234.02",
+    "role": "Student",
+    "lastActivity": "20 minutes ago",
+    "totalActivity": "9 hrs"
+  },
+  {
+    "_id": "U107",
+    "firstName": "Ava",
+    "lastName": "Wilson",
+    "loginId": "awilson",
+    "section": "CS1234.02",
+    "role": "Student",
+    "lastActivity": "2 days ago",
+    "totalActivity": "6 hrs"
+  },
+  {
+    "_id": "U108",
+    "firstName": "Noah",
+    "lastName": "Davis",
+    "loginId": "ndavis",
+    "section": "CS1234.02",
+    "role": "TA",
+    "lastActivity": "1 hour ago",
+    "totalActivity": "10 hrs"
+  },
+  {
+    "_id": "U109",
+    "firstName": "Isabella",
+    "lastName": "Chen",
+    "loginId": "ichen",
+    "section": "CS1234.03",
+    "role": "Student",
+    "lastActivity": "4 hours ago",
+    "totalActivity": "5 hrs"
+  },
+  {
+    "_id": "U110",
+    "firstName": "William",
+    "lastName": "Garcia",
+    "loginId": "wgarcia",
+    "section": "CS1234.03",
+    "role": "Student",
+    "lastActivity": "3 days ago",
+    "totalActivity": "4 hrs"
+  },
+  {
+    "_id": "U111",
+    "firstName": "Mia",
+    "lastName": "Roberts",
+    "loginId": "mroberts",
+    "section": "CS1234.03",
+    "role": "TA",
+    "lastActivity": "1 day ago",
+    "totalActivity": "11 hrs"
+  },
+  {
+    "_id": "U112",
+    "firstName": "James",
+    "lastName": "Johnson",
+    "loginId": "jjohnson",
+    "section": "CS1234.03",
+    "role": "Faculty",
+    "lastActivity": "30 minutes ago",
+    "totalActivity": "16 hrs"
+  }
+]

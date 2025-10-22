@@ -96,4 +96,17 @@ body * {
   border-left: 3px solid green !important;
 }
 
+#wd-people-table table {
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+#wd-people-table th {
+  background-color: #f8f9fa;
+}
+
+#wd-people-table td {
+  vertical-align: middle;
+}
+
 

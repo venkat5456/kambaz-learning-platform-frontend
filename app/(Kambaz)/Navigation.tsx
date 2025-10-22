@@ -6,8 +6,20 @@ import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function KambazNavigation() {
+  const pathname = usePathname();
+
+  const links = [
+  { label: "Dashboard", path: "/Dashboard", icon: AiOutlineDashboard },
+  { label: "Courses", path: "/Courses", icon: LiaBookSolid },  // ✅ unique
+  { label: "Calendar", path: "/Calendar", icon: IoCalendarOutline },
+  { label: "Inbox", path: "/Inbox", icon: FaInbox },
+  { label: "Labs", path: "/Labs", icon: LiaCogSolid },
+];
+
+  // 🔹 Step 2: Render dynamically
   return (
     <ListGroup
       id="wd-kambaz-navigation"
@@ -30,88 +42,49 @@ export default function KambazNavigation() {
       </ListGroupItem>
       <br />
 
-      {/* Account (white icon/text) */}
-      <ListGroupItem className="border-0 bg-black text-center">
-        <Link
-          href="/Account"
-          id="wd-account-link"
-          className="text-white text-decoration-none"
-        >
-          <FaRegCircleUser className="fs-1 text-white" />
-          <br />
-          Account
-        </Link>
+      {/* Account Link */}
+      <ListGroupItem
+        as={Link}
+        href="/Account"
+        id="wd-account-link"
+        className={`text-center border-0 ${
+          pathname.includes("Account")
+            ? "bg-white text-danger"
+            : "bg-black text-white"
+        }`}
+      >
+        <FaRegCircleUser
+          className={`fs-1 ${
+            pathname.includes("Account") ? "text-danger" : "text-white"
+          }`}
+        />
+        <br />
+        Account
       </ListGroupItem>
       <br />
 
-      {/* Dashboard (active: red on white) */}
-      <ListGroupItem className="border-0 bg-white text-center">
-        <Link
-          href="/Dashboard"
-          id="wd-dashboard-link"
-          className="text-danger text-decoration-none"
+      {/* Dynamic Navigation Links */}
+      {links.map((link) => (
+        <ListGroupItem
+          key={link.path}
+          as={Link}
+          href={link.path}
+          id={`wd-${link.label.toLowerCase()}-link`}
+          className={`text-center border-0 ${
+            pathname.includes(link.label)
+              ? "bg-white text-danger"
+              : "bg-black text-white"
+          }`}
         >
-          <AiOutlineDashboard className="fs-1 text-danger" />
+          <link.icon
+            className={`fs-1 ${
+              pathname.includes(link.label) ? "text-danger" : "text-white"
+            }`}
+          />
           <br />
-          Dashboard
-        </Link>
-      </ListGroupItem>
-      <br />
-
-      {/* Courses */}
-      <ListGroupItem className="border-0 bg-black text-center">
-        <Link
-          href="/Courses"
-          id="wd-courses-link"
-          className="text-white text-decoration-none"
-        >
-          <LiaBookSolid className="fs-1 text-white" />
-          <br />
-          Courses
-        </Link>
-      </ListGroupItem>
-      <br />
-
-      {/* Calendar */}
-      <ListGroupItem className="border-0 bg-black text-center">
-        <Link
-          href="/Calendar"
-          id="wd-calendar-link"
-          className="text-white text-decoration-none"
-        >
-          <IoCalendarOutline className="fs-1 text-white" />
-          <br />
-          Calendar
-        </Link>
-      </ListGroupItem>
-      <br />
-
-      {/* Inbox */}
-      <ListGroupItem className="border-0 bg-black text-center">
-        <Link
-          href="/Inbox"
-          id="wd-inbox-link"
-          className="text-white text-decoration-none"
-        >
-          <FaInbox className="fs-1 text-white" />
-          <br />
-          Inbox
-        </Link>
-      </ListGroupItem>
-      <br />
-
-      {/* Settings */}
-      <ListGroupItem className="border-0 bg-black text-center">
-        <Link
-          href="/Settings"
-          id="wd-settings-link"
-          className="text-white text-decoration-none"
-        >
-          <LiaCogSolid className="fs-1 text-white" />
-          <br />
-          Settings
-        </Link>
-      </ListGroupItem>
+          {link.label}
+        </ListGroupItem>
+      ))}
     </ListGroup>
   );
 }

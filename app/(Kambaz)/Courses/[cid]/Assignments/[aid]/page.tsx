@@ -1,17 +1,29 @@
 "use client";
 
 import { Form, Button, Row, Col } from "react-bootstrap";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import * as db from "../../../../Database";
 
 export default function EditAssignmentPage() {
+  const { cid, aid } = useParams();
+  const assignment = db.assignments.find(
+    (a: any) => a.course === cid && a.id === aid
+  );
+
+  if (!assignment) {
+    return <div className="p-4">Assignment not found.</div>;
+  }
+
   return (
     <div id="wd-edit-assignment" className="p-4">
-      <h2 className="mb-4">Edit Assignment: A1</h2>
+      <h2 className="mb-4">Edit Assignment: {assignment.id}</h2>
 
       <Form>
         {/* Assignment Name */}
         <Form.Group className="mb-3" controlId="assignmentName">
           <Form.Label className="fw-bold">Assignment Name</Form.Label>
-          <Form.Control type="text" defaultValue="A1 - Example Assignment" />
+          <Form.Control type="text" defaultValue={assignment.title} />
         </Form.Group>
 
         {/* Description */}
@@ -20,14 +32,7 @@ export default function EditAssignmentPage() {
           <Form.Control
             as="textarea"
             rows={6}
-            defaultValue={`The assignment is available online.
-Submit a link to the landing page of your Web application running on Netlify.
-
-The landing page should include:
-- Your full name and section
-- Links to each of the lab assignments
-- Link to the Kambaz application
-- Links to all relevant source code repositories`}
+            defaultValue={assignment.description}
           />
         </Form.Group>
 
@@ -37,52 +42,11 @@ The landing page should include:
             Points
           </Form.Label>
           <Col sm={4}>
-            <Form.Control type="number" defaultValue={100} />
+            <Form.Control
+              type="number"
+              defaultValue={assignment.points || 100}
+            />
           </Col>
-        </Form.Group>
-
-        {/* Assignment Group */}
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2} className="fw-bold">
-            Assignment Group
-          </Form.Label>
-          <Col sm={6}>
-            <Form.Select defaultValue="Assignments">
-              <option>Assignments</option>
-              <option>Labs</option>
-              <option>Projects</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
-
-        {/* Display Grade As */}
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2} className="fw-bold">
-            Display Grade as
-          </Form.Label>
-          <Col sm={6}>
-            <Form.Select defaultValue="Percentage">
-              <option>Percentage</option>
-              <option>Points</option>
-              <option>Complete/Incomplete</option>
-            </Form.Select>
-          </Col>
-        </Form.Group>
-
-        {/* Submission Type */}
-        <Form.Group className="mb-3">
-          <Form.Label className="fw-bold">Submission Type</Form.Label>
-          <Form.Select defaultValue="Online">
-            <option>Online</option>
-            <option>On Paper</option>
-            <option>No Submission</option>
-          </Form.Select>
-          <div className="mt-2 ps-3">
-            <Form.Check type="checkbox" label="Text Entry" />
-            <Form.Check type="checkbox" label="Website URL" defaultChecked />
-            <Form.Check type="checkbox" label="Media Recordings" />
-            <Form.Check type="checkbox" label="File Uploads" />
-          </div>
         </Form.Group>
 
         {/* Assign To Section */}
@@ -95,11 +59,25 @@ The landing page should include:
         <Row className="mb-3">
           <Col>
             <Form.Label>Due</Form.Label>
-            <Form.Control type="datetime-local" defaultValue="2025-05-13T23:59" />
+            <Form.Control
+              type="datetime-local"
+              defaultValue={
+                assignment.due
+                  ? `${assignment.due}T23:59`
+                  : "2025-05-13T23:59"
+              }
+            />
           </Col>
           <Col>
             <Form.Label>Available From</Form.Label>
-            <Form.Control type="datetime-local" defaultValue="2025-05-06T00:00" />
+            <Form.Control
+              type="datetime-local"
+              defaultValue={
+                assignment.available
+                  ? `${assignment.available}T00:00`
+                  : "2025-05-06T00:00"
+              }
+            />
           </Col>
           <Col>
             <Form.Label>Until</Form.Label>
@@ -109,10 +87,16 @@ The landing page should include:
 
         {/* Buttons */}
         <div className="mt-4">
-          <Button variant="danger" type="submit" className="me-2">
-            Save
-          </Button>
-          <Button variant="secondary">Cancel</Button>
+          <Link href={`/Courses/${cid}/Assignments`}>
+            <Button variant="danger" type="button" className="me-2">
+              Save
+            </Button>
+          </Link>
+          <Link href={`/Courses/${cid}/Assignments`}>
+            <Button variant="secondary" type="button">
+              Cancel
+            </Button>
+          </Link>
         </div>
       </Form>
     </div>

@@ -1,0 +1,123 @@
+[
+  {
+    "id": "A1",
+    "course": "CS1234",
+    "title": "JSX and Components",
+    "description": "Build a simple React component using JSX and props.",
+    "available": "May 6 at 12:00am",
+    "due": "May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A2",
+    "course": "CS1234",
+    "title": "State and Hooks",
+    "description": "Implement useState and useEffect in a small project.",
+    "available": "May 13 at 12:00am",
+    "due": "May 20 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A3",
+    "course": "CS1234",
+    "title": "Routing in React",
+    "description": "Create multiple pages with React Router.",
+    "available": "May 20 at 12:00am",
+    "due": "May 27 at 11:59pm",
+    "points": 100
+  },
+
+  {
+    "id": "A1",
+    "course": "CS5678",
+    "title": "Next.js Basics",
+    "description": "Create your first Next.js page and deploy it to Vercel.",
+    "available": "May 6 at 12:00am",
+    "due": "May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A2",
+    "course": "CS5678",
+    "title": "Tailwind Layouts",
+    "description": "Design responsive layouts using TailwindCSS.",
+    "available": "May 13 at 12:00am",
+    "due": "May 20 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A3",
+    "course": "CS5678",
+    "title": "AWS Deployment",
+    "description": "Deploy a full-stack app to AWS S3 or EC2.",
+    "available": "May 20 at 12:00am",
+    "due": "May 27 at 11:59pm",
+    "points": 100
+  },
+
+  {
+    "id": "A1",
+    "course": "CS9012",
+    "title": "Java OOP Concepts",
+    "description": "Implement a class hierarchy demonstrating inheritance.",
+    "available": "May 6 at 12:00am",
+    "due": "May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A2",
+    "course": "CS9012",
+    "title": "Design Patterns",
+    "description": "Code a program using Singleton and Factory patterns.",
+    "available": "May 13 at 12:00am",
+    "due": "May 20 at 11:59pm",
+    "points": 100
+  },
+
+  {
+    "id": "A1",
+    "course": "CS7890",
+    "title": "AI Overview",
+    "description": "Write a short report on AI search algorithms.",
+    "available": "May 6 at 12:00am",
+    "due": "May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A2",
+    "course": "CS7890",
+    "title": "Neural Networks Mini-Lab",
+    "description": "Train a small feedforward model using Python.",
+    "available": "May 13 at 12:00am",
+    "due": "May 20 at 11:59pm",
+    "points": 100
+  },
+
+  {
+    "id": "A1",
+    "course": "CS3456",
+    "title": "Python Basics",
+    "description": "Write basic Python programs using variables, conditionals, and loops.",
+    "available": "May 6 at 12:00am",
+    "due": "May 13 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A2",
+    "course": "CS3456",
+    "title": "Functions and Data Structures",
+    "description": "Implement reusable functions and manipulate lists and dictionaries.",
+    "available": "May 13 at 12:00am",
+    "due": "May 20 at 11:59pm",
+    "points": 100
+  },
+  {
+    "id": "A3",
+    "course": "CS3456",
+    "title": "OOP in Python",
+    "description": "Build a class-based system demonstrating inheritance and polymorphism.",
+    "available": "May 20 at 12:00am",
+    "due": "May 27 at 11:59pm",
+    "points": 100
+  }
+]

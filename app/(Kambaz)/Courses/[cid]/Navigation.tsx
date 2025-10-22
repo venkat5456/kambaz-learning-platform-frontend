@@ -1,63 +1,51 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 
-interface CourseNavigationProps {
-  cid: string;
-}
+export default function CourseNavigation({ cid }: { cid: string }) {
+  const links = [
+    "Home",
+    "Modules",
+    "Piazza",
+    "Zoom",
+    "Assignments",
+    "Quizzes",
+    "Grades",
+    "People",
+  ];
 
-export default function CourseNavigation({ cid }: CourseNavigationProps) {
+  const pathname = usePathname();
+
   return (
-    <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">
-      <Link
-        href={`/Courses/${cid}/Home`}
-        id="wd-course-home-link"
-        className="list-group-item active border-0"
-      >
-        Home
-      </Link>
-      <Link
-        href={`/Courses/${cid}/Modules`}
-        id="wd-course-modules-link"
-        className="list-group-item border-0"
-      >
-        Modules
-      </Link>
-      <Link
-        href={`/Courses/${cid}/Piazza`}
-        id="wd-course-piazza-link"
-        className="list-group-item border-0"
-      >
-        Piazza
-      </Link>
-      <Link
-        href={`/Courses/${cid}/Zoom`}
-        id="wd-course-zoom-link"
-        className="list-group-item border-0"
-      >
-        Zoom
-      </Link>
-      <Link
-        href={`/Courses/${cid}/Assignments`}
-        id="wd-course-assignments-link"
-        className="list-group-item border-0"
-      >
-        Assignments
-      </Link>
-      <Link
-        href={`/Courses/${cid}/Quizzes`}
-        id="wd-course-quizzes-link"
-        className="list-group-item border-0"
-      >
-        Quizzes
-      </Link>
-      <Link
-        href={`/Courses/${cid}/People`}  
-        id="wd-course-people-link"
-        className="list-group-item border-0"
-      >
-        People
-      </Link>
-    </div>
+    <ListGroup id="wd-course-navigation" className="rounded-0 fs-5">
+      {links.map((label) => {
+        const href = `/Courses/${cid}/${label}`;
+        const isActive =
+          pathname.endsWith(`/${label}`) ||
+          (label === "Home" && pathname === `/Courses/${cid}`);
+
+        return (
+          <ListGroupItem
+            key={label}
+            as={Link}
+            href={href}
+            id={`wd-course-${label.toLowerCase()}-link`}
+            // ✅ New styling: black left border, no red background
+            className={`border-0 rounded-0 py-2 ${
+              isActive
+                ? "border-start border-4 border-dark text-dark bg-white fw-semibold"
+                : "text-danger bg-white"
+            }`}
+            style={{
+              textDecoration: "none",
+            }}
+          >
+            {label}
+          </ListGroupItem>
+        );
+      })}
+    </ListGroup>
   );
 }
