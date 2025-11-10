@@ -5,16 +5,23 @@ import { ListGroup } from "react-bootstrap";
 import TodoForm from "./TodoForm";
 import TodoItem from "./TodoItem";
 
+
+interface Todo {
+  id: string;
+  title: string;
+}
+
 export default function TodoList() {
-  const [todos, setTodos] = useState([
+  const [todos, setTodos] = useState<Todo[]>([
     { id: "1", title: "Learn React" },
     { id: "2", title: "Learn Node" },
   ]);
 
-  const [todo, setTodo] = useState({ id: "-1", title: "Learn Mongo" });
+  const [todo, setTodo] = useState<Todo>({ id: "-1", title: "Learn Mongo" });
 
-  const addTodo = (todo: any) => {
-    const newTodos = [
+  
+  const addTodo = (todo: Todo): void => {
+    const newTodos: Todo[] = [
       ...todos,
       { ...todo, id: new Date().getTime().toString() },
     ];
@@ -22,13 +29,17 @@ export default function TodoList() {
     setTodo({ id: "-1", title: "" });
   };
 
-  const deleteTodo = (id: string) => {
+  
+  const deleteTodo = (id: string): void => {
     const newTodos = todos.filter((t) => t.id !== id);
     setTodos(newTodos);
   };
 
-  const updateTodo = (updated: any) => {
-    const newTodos = todos.map((t) => (t.id === updated.id ? updated : t));
+  
+  const updateTodo = (updated: Todo): void => {
+    const newTodos: Todo[] = todos.map((t) =>
+      t.id === updated.id ? updated : t
+    );
     setTodos(newTodos);
     setTodo({ id: "-1", title: "" });
   };
