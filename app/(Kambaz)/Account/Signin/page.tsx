@@ -9,13 +9,34 @@ import { useState } from "react";
 import * as db from "../../Database";
 import { FormControl, Button } from "react-bootstrap";
 
+// ✅ Define consistent User type
+interface User {
+  _id?: string;
+  username: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
+}
+
+// ✅ Define credentials type for signin form
+interface Credentials {
+  username: string;
+  password: string;
+}
+
 export default function Signin() {
-  const [credentials, setCredentials] = useState<any>({});
+  const [credentials, setCredentials] = useState<Credentials>({
+    username: "",
+    password: "",
+  });
+
   const dispatch = useDispatch();
 
-  const signin = () => {
+  const signin = (): void => {
     // find user in db.users that matches credentials
-    const user = (db.users as any[]).find(
+    const user = (db.users as User[]).find(
       (u) =>
         u.username === credentials.username &&
         u.password === credentials.password
@@ -40,7 +61,8 @@ export default function Signin() {
         id="wd-username"
         placeholder="username"
         className="mb-2"
-        onChange={(e) =>
+        value={credentials.username}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setCredentials({ ...credentials, username: e.target.value })
         }
       />
@@ -50,7 +72,8 @@ export default function Signin() {
         placeholder="password"
         type="password"
         className="mb-2"
-        onChange={(e) =>
+        value={credentials.password}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setCredentials({ ...credentials, password: e.target.value })
         }
       />

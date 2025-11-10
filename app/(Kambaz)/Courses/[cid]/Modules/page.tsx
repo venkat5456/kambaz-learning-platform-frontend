@@ -16,6 +16,20 @@ import {
 } from "./reducer";
 import React, { useState } from "react";
 
+// ✅ Define Lesson and Module interfaces
+interface Lesson {
+  _id?: string;
+  name: string;
+}
+
+interface Module {
+  _id: string;
+  name: string;
+  course: string | string[] | undefined;
+  editing?: boolean;
+  lessons?: Lesson[];
+}
+
 export default function ModulesPage() {
   const { cid } = useParams(); // e.g., "CS1234"
   const dispatch = useDispatch();
@@ -24,7 +38,7 @@ export default function ModulesPage() {
   const { modules } = useSelector((state: RootState) => state.modulesReducer);
 
   // ✅ Local state for module input only
-  const [moduleName, setModuleName] = useState("");
+  const [moduleName, setModuleName] = useState<string>("");
 
   return (
     <div className="p-3 wd-modules">
@@ -42,9 +56,9 @@ export default function ModulesPage() {
 
       {/* ✅ Render modules */}
       <ListGroup id="wd-modules" className="rounded-0">
-        {modules
-          .filter((module: any) => module.course === cid)
-          .map((module: any) => (
+        {(modules as Module[])
+          .filter((module) => module.course === cid)
+          .map((module) => (
             <ListGroupItem
               key={module._id}
               className="wd-module p-0 mb-5 fs-5 border-gray"
@@ -58,12 +72,12 @@ export default function ModulesPage() {
                   {module.editing && (
                     <FormControl
                       className="w-50 d-inline-block"
-                      onChange={(e) =>
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         dispatch(
                           updateModule({ ...module, name: e.target.value })
                         )
                       }
-                      onKeyDown={(e) => {
+                      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                         if (e.key === "Enter") {
                           dispatch(
                             updateModule({ ...module, editing: false })
@@ -78,9 +92,7 @@ export default function ModulesPage() {
                 {/* Right side: control icons */}
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={(moduleId) =>
-                    dispatch(deleteModule(moduleId))
-                  }
+                  deleteModule={(moduleId) => dispatch(deleteModule(moduleId))}
                   editModule={(moduleId) => dispatch(editModule(moduleId))}
                 />
               </div>
@@ -88,7 +100,7 @@ export default function ModulesPage() {
               {/* Lessons section */}
               {module.lessons && module.lessons.length > 0 ? (
                 <ListGroup className="wd-lessons rounded-0">
-                  {module.lessons.map((lesson: any, i: number) => (
+                  {module.lessons.map((lesson: Lesson, i: number) => (
                     <ListGroupItem
                       key={i}
                       className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"

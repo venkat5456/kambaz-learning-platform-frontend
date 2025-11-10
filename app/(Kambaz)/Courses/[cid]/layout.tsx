@@ -7,17 +7,27 @@ import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 
+// ✅ Define Course interface
+interface Course {
+  _id: string;
+  name: string;
+  number?: string;
+  startDate?: string;
+  endDate?: string;
+  term?: string;
+}
+
 export default function CoursesLayout({ children }: { children: ReactNode }) {
   const { cid } = useParams();
 
-  // ✅ Get all courses from Redux store (instead of Database)
+  // ✅ Get all courses from Redux store
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
 
-  // ✅ Find the selected course
-  const course = courses.find((c: any) => c._id === cid);
+  // ✅ Find the selected course (typed, no `any`)
+  const course = (courses as Course[]).find((c) => c._id === cid);
 
   // ✅ Track sidebar visibility
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState<boolean>(true);
 
   return (
     <div id="wd-courses" className="p-3">
@@ -37,10 +47,7 @@ export default function CoursesLayout({ children }: { children: ReactNode }) {
       <div className="d-flex">
         {/* Sidebar navigation (toggleable) */}
         {showSidebar && (
-          <div
-            className="border-end me-3"
-            style={{ width: "200px" }}
-          >
+          <div className="border-end me-3" style={{ width: "200px" }}>
             <CourseNavigation cid={cid as string} />
           </div>
         )}

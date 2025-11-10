@@ -6,15 +6,24 @@ import { RootState } from "../../store";
 import * as db from "../../Database";
 import Home from "./Home/page";
 
+// ✅ Define Enrollment type
+interface Enrollment {
+  _id?: string;
+  user: string;
+  course: string;
+}
+
 export default function CoursesPage() {
   const { cid } = useParams(); // e.g., "CS1234"
-  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer
+  );
   const { enrollments } = db;
 
-  // ✅ Check if user is enrolled
+  // ✅ Check if user is enrolled (typed)
   const isEnrolled = currentUser
-    ? enrollments.some(
-        (enrollment: any) =>
+    ? (enrollments as Enrollment[]).some(
+        (enrollment) =>
           enrollment.user === currentUser._id && enrollment.course === cid
       )
     : false;

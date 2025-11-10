@@ -8,17 +8,29 @@ import { setCurrentUser } from "../reducer";
 import { RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
 
+// ✅ Define the Profile interface for strong typing
+interface Profile {
+  _id?: string;
+  username?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  dob?: string;
+  email?: string;
+  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
+}
+
 export default function Profile() {
-  const [profile, setProfile] = useState<any>({});
+  const [profile, setProfile] = useState<Profile>({});
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
 
-  const fetchProfile = () => {
+  const fetchProfile = (): void => {
     if (!currentUser) return redirect("/Account/Signin");
     setProfile(currentUser);
   };
 
-  const signout = () => {
+  const signout = (): void => {
     dispatch(setCurrentUser(null));
     redirect("/Account/Signin");
   };
@@ -35,54 +47,73 @@ export default function Profile() {
         <>
           <FormControl
             id="wd-username"
-            placeholder="username"
+            placeholder="Username"
             defaultValue={profile.username}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, username: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, username: e.target.value })
+            }
           /><br />
+
           <FormControl
             id="wd-password"
-            placeholder="password"
+            placeholder="Password"
             type="password"
             defaultValue={profile.password}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, password: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, password: e.target.value })
+            }
           /><br />
+
           <FormControl
             id="wd-firstname"
             placeholder="First Name"
             defaultValue={profile.firstName}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, firstName: e.target.value })
+            }
           /><br />
+
           <FormControl
             id="wd-lastname"
             placeholder="Last Name"
             defaultValue={profile.lastName}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, lastName: e.target.value })
+            }
           /><br />
+
           <FormControl
             id="wd-dob"
             type="date"
             defaultValue={profile.dob}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, dob: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, dob: e.target.value })
+            }
           /><br />
+
           <FormControl
             id="wd-email"
             type="email"
-            placeholder="email"
+            placeholder="Email"
             defaultValue={profile.email}
             className="mb-2"
-            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setProfile({ ...profile, email: e.target.value })
+            }
           /><br />
 
           <select
             id="wd-role"
             className="form-control mb-2"
             defaultValue={profile.role}
-            onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setProfile({ ...profile, role: e.target.value as Profile["role"] })
+            }
           >
             <option value="USER">User</option>
             <option value="ADMIN">Admin</option>

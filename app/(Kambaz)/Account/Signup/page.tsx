@@ -9,13 +9,35 @@ import * as db from "../../Database";
 import { redirect } from "next/dist/client/components/navigation";
 import { v4 as uuidv4 } from "uuid";
 
+// ✅ Define consistent Credential and User types
+interface Credentials {
+  username: string;
+  password: string;
+}
+
+interface User {
+  _id: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dob: string;
+  role: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
+}
+
 export default function Signup() {
-  const [credentials, setCredentials] = useState<any>({});
+  // ✅ Replace `any` with specific Credentials type
+  const [credentials, setCredentials] = useState<Credentials>({
+    username: "",
+    password: "",
+  });
+
   const dispatch = useDispatch();
 
-  const signup = () => {
-    // ✅ Create a new user object
-    const newUser = {
+  const signup = (): void => {
+    // ✅ Create a new user object (typed)
+    const newUser: User = {
       _id: uuidv4(),
       username: credentials.username,
       password: credentials.password,
@@ -27,12 +49,12 @@ export default function Signup() {
     };
 
     // ✅ Add the new user to in-memory DB
-    db.users.push(newUser);
+    (db.users as User[]).push(newUser);
 
     // ✅ Save the new user as current user in Redux
     dispatch(setCurrentUser(newUser));
 
-    // ✅ Redirect to Dashboard (already logged in)
+    // ✅ Redirect to Dashboard
     redirect("/Dashboard");
   };
 
@@ -44,16 +66,19 @@ export default function Signup() {
         id="wd-username"
         placeholder="username"
         className="mb-2"
-        onChange={(e) =>
+        value={credentials.username}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setCredentials({ ...credentials, username: e.target.value })
         }
       />
+
       <FormControl
         id="wd-password"
         placeholder="password"
         type="password"
         className="mb-2"
-        onChange={(e) =>
+        value={credentials.password}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setCredentials({ ...credentials, password: e.target.value })
         }
       />

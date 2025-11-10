@@ -6,30 +6,38 @@ import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "../reducer";
 import { v4 as uuidv4 } from "uuid";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
-
-// ✅ Correct relative import for store
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const store = require("../../../../store").default;
-type RootState = ReturnType<typeof store.getState>;
+import { RootState } from "../../../../../store"; // ✅ replace require()
+  
+// ✅ Define Assignment interface for strong typing
+interface Assignment {
+  _id: string;
+  course: string | string[] | undefined;
+  title: string;
+  description: string;
+  points: number;
+  availableFrom: string;
+  dueDate: string;
+  untilDate: string;
+}
 
 export default function AssignmentEditorPage() {
   const { cid, aid } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // ✅ Get assignments from Redux
+  // ✅ Typed selector
   const { assignments } = useSelector(
     (state: RootState) => state.assignmentsReducer
   );
 
-  // ✅ Find existing assignment or create new one
+  // ✅ Type-safe lookup instead of (a: any)
   const existing = assignments.find(
-    (a: any) => a.course === cid && a._id === aid
+    (a: Assignment) => a.course === cid && a._id === aid
   );
 
-  const [assignment, setAssignment] = useState(
+  const [assignment, setAssignment] = useState<Assignment>(
     existing || {
-      _id: aid === "new" ? uuidv4() : aid,
+      _id: aid === "new" ? uuidv4() : (aid as string),
       course: cid,
       title: "New Assignment",
       description: "New Assignment Description",
@@ -41,7 +49,7 @@ export default function AssignmentEditorPage() {
   );
 
   // ✅ Handlers
-  const handleSave = () => {
+  const handleSave = (): void => {
     if (existing) {
       dispatch(updateAssignment(assignment));
     } else {
@@ -50,11 +58,10 @@ export default function AssignmentEditorPage() {
     router.push(`/Courses/${cid}/Assignments`);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     router.push(`/Courses/${cid}/Assignments`);
   };
 
-  // ✅ UI Layout (matches Figure 4.4.5.2)
   return (
     <div id="wd-assignment-editor" className="p-4">
       <h2 className="mb-4">
@@ -69,7 +76,7 @@ export default function AssignmentEditorPage() {
             <Form.Control
               type="text"
               value={assignment.title}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setAssignment({ ...assignment, title: e.target.value })
               }
             />
@@ -81,7 +88,7 @@ export default function AssignmentEditorPage() {
               as="textarea"
               rows={4}
               value={assignment.description}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setAssignment({ ...assignment, description: e.target.value })
               }
             />
@@ -93,7 +100,7 @@ export default function AssignmentEditorPage() {
             <Form.Control
               type="number"
               value={assignment.points}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setAssignment({
                   ...assignment,
                   points: Number(e.target.value),
@@ -102,7 +109,7 @@ export default function AssignmentEditorPage() {
             />
           </Form.Group>
 
-          {/* Assign section */}
+          {/* Assign Section */}
           <h5 className="fw-semibold mt-4">Assign</h5>
           <Card className="p-3 mt-2 border-0 bg-light">
             <Row className="align-items-center">
@@ -111,11 +118,8 @@ export default function AssignmentEditorPage() {
                 <Form.Control
                   type="date"
                   value={assignment.dueDate}
-                  onChange={(e) =>
-                    setAssignment({
-                      ...assignment,
-                      dueDate: e.target.value,
-                    })
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setAssignment({ ...assignment, dueDate: e.target.value })
                   }
                 />
               </Col>
@@ -125,7 +129,7 @@ export default function AssignmentEditorPage() {
                 <Form.Control
                   type="date"
                   value={assignment.availableFrom}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setAssignment({
                       ...assignment,
                       availableFrom: e.target.value,
@@ -139,7 +143,7 @@ export default function AssignmentEditorPage() {
                 <Form.Control
                   type="date"
                   value={assignment.untilDate}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setAssignment({
                       ...assignment,
                       untilDate: e.target.value,
@@ -152,11 +156,7 @@ export default function AssignmentEditorPage() {
 
           {/* Buttons */}
           <div className="d-flex justify-content-end mt-4">
-            <Button
-              variant="secondary"
-              className="me-2"
-              onClick={handleCancel}
-            >
+            <Button variant="secondary" className="me-2" onClick={handleCancel}>
               Cancel
             </Button>
             <Button variant="danger" onClick={handleSave}>
