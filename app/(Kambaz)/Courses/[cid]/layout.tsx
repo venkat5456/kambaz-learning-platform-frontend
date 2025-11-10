@@ -1,51 +1,49 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { FaAlignJustify } from "react-icons/fa";
 import CourseNavigation from "./Navigation";
-import { courses as importedCourses } from "../../Database";
 import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
-// ✅ Define your course type
-interface Course {
-  _id: string;
-  name: string;
-  number?: string;
-  term?: string;
-  section?: string;
-}
-
-// ✅ Explicitly cast importedCourses to your Course[] type
-const courses: Course[] = importedCourses as unknown as Course[];
-
-export default function CoursesLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function CoursesLayout({ children }: { children: ReactNode }) {
   const { cid } = useParams();
 
-  // ✅ Safe find with type inference
-  const course = courses.find((c) => c._id === cid);
+  // ✅ Get all courses from Redux store (instead of Database)
+  const { courses } = useSelector((state: RootState) => state.coursesReducer);
+
+  // ✅ Find the selected course
+  const course = courses.find((c: any) => c._id === cid);
+
+  // ✅ Track sidebar visibility
+  const [showSidebar, setShowSidebar] = useState(true);
 
   return (
     <div id="wd-courses" className="p-3">
-      {/* Course header */}
+      {/* ✅ Header with toggle button */}
       <h2 className="text-danger d-flex align-items-center">
-        <FaAlignJustify className="me-3 fs-4 mb-1" />
+        <FaAlignJustify
+          className="me-3 fs-4 mb-1"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowSidebar(!showSidebar)}
+          title={showSidebar ? "Hide sidebar" : "Show sidebar"}
+        />
         {course ? course.name : `Course ${cid}`}
       </h2>
       <hr />
 
-      {/* Flexbox layout */}
+      {/* ✅ Flexbox layout */}
       <div className="d-flex">
-        {/* Sidebar navigation */}
-        <div
-          className="d-none d-md-block border-end me-3"
-          style={{ width: "200px" }}
-        >
-          <CourseNavigation cid={cid as string} />
-        </div>
+        {/* Sidebar navigation (toggleable) */}
+        {showSidebar && (
+          <div
+            className="border-end me-3"
+            style={{ width: "200px" }}
+          >
+            <CourseNavigation cid={cid as string} />
+          </div>
+        )}
 
         {/* Main content */}
         <div className="flex-fill">{children}</div>

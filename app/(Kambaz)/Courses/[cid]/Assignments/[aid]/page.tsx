@@ -1,120 +1,170 @@
 "use client";
 
-import { Form, Button, Row, Col } from "react-bootstrap";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import * as db from "../../../../Database";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { addAssignment, updateAssignment } from "../reducer";
+import { v4 as uuidv4 } from "uuid";
+import { Form, Button, Row, Col, Card } from "react-bootstrap";
 
-// ✅ Define a proper Assignment type
-interface Assignment {
-  id: string;
-  course: string;
-  title: string;
-  description?: string;
-  points?: number;
-  due?: string;
-  available?: string;
-}
+// ✅ Correct relative import for store
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const store = require("../../../../store").default;
+type RootState = ReturnType<typeof store.getState>;
 
-export default function EditAssignmentPage() {
+export default function AssignmentEditorPage() {
   const { cid, aid } = useParams();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-  // ✅ Tell TypeScript the type of items in db.assignments
-  const assignments: Assignment[] = db.assignments as Assignment[];
-
-  // ✅ Use the correct field names and typed variable
-  const assignment = assignments.find(
-    (a) => a.course === cid && a.id === aid
+  // ✅ Get assignments from Redux
+  const { assignments } = useSelector(
+    (state: RootState) => state.assignmentsReducer
   );
 
-  if (!assignment) {
-    return <div className="p-4">Assignment not found.</div>;
-  }
+  // ✅ Find existing assignment or create new one
+  const existing = assignments.find(
+    (a: any) => a.course === cid && a._id === aid
+  );
 
+  const [assignment, setAssignment] = useState(
+    existing || {
+      _id: aid === "new" ? uuidv4() : aid,
+      course: cid,
+      title: "New Assignment",
+      description: "New Assignment Description",
+      points: 100,
+      availableFrom: "",
+      dueDate: "",
+      untilDate: "",
+    }
+  );
+
+  // ✅ Handlers
+  const handleSave = () => {
+    if (existing) {
+      dispatch(updateAssignment(assignment));
+    } else {
+      dispatch(addAssignment(assignment));
+    }
+    router.push(`/Courses/${cid}/Assignments`);
+  };
+
+  const handleCancel = () => {
+    router.push(`/Courses/${cid}/Assignments`);
+  };
+
+  // ✅ UI Layout (matches Figure 4.4.5.2)
   return (
-    <div id="wd-edit-assignment" className="p-4">
-      <h2 className="mb-4">Edit Assignment: {assignment.id}</h2>
+    <div id="wd-assignment-editor" className="p-4">
+      <h2 className="mb-4">
+        {existing ? "Edit Assignment" : "New Assignment"}
+      </h2>
 
-      <Form>
-        {/* Assignment Name */}
-        <Form.Group className="mb-3" controlId="assignmentName">
-          <Form.Label className="fw-bold">Assignment Name</Form.Label>
-          <Form.Control type="text" defaultValue={assignment.title} />
-        </Form.Group>
+      <Card className="p-4 shadow-sm border-0">
+        <Form>
+          {/* Assignment Name */}
+          <Form.Group className="mb-3" controlId="assignmentTitle">
+            <Form.Label className="fw-semibold">Assignment Name</Form.Label>
+            <Form.Control
+              type="text"
+              value={assignment.title}
+              onChange={(e) =>
+                setAssignment({ ...assignment, title: e.target.value })
+              }
+            />
+          </Form.Group>
 
-        {/* Description */}
-        <Form.Group className="mb-3" controlId="assignmentDescription">
-          <Form.Label className="fw-bold">Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={6}
-            defaultValue={assignment.description}
-          />
-        </Form.Group>
+          {/* Description */}
+          <Form.Group className="mb-3" controlId="assignmentDescription">
+            <Form.Control
+              as="textarea"
+              rows={4}
+              value={assignment.description}
+              onChange={(e) =>
+                setAssignment({ ...assignment, description: e.target.value })
+              }
+            />
+          </Form.Group>
 
-        {/* Points */}
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2} className="fw-bold">
-            Points
-          </Form.Label>
-          <Col sm={4}>
+          {/* Points */}
+          <Form.Group className="mb-3" controlId="assignmentPoints">
+            <Form.Label className="fw-semibold">Points</Form.Label>
             <Form.Control
               type="number"
-              defaultValue={assignment.points || 100}
-            />
-          </Col>
-        </Form.Group>
-
-        {/* Assign To Section */}
-        <h5 className="mt-4">Assign</h5>
-        <Form.Group className="mb-3">
-          <Form.Label>Assign To</Form.Label>
-          <Form.Control type="text" defaultValue="Everyone" />
-        </Form.Group>
-
-        <Row className="mb-3">
-          <Col>
-            <Form.Label>Due</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              defaultValue={
-                assignment.due
-                  ? `${assignment.due}T23:59`
-                  : "2025-05-13T23:59"
+              value={assignment.points}
+              onChange={(e) =>
+                setAssignment({
+                  ...assignment,
+                  points: Number(e.target.value),
+                })
               }
             />
-          </Col>
-          <Col>
-            <Form.Label>Available From</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              defaultValue={
-                assignment.available
-                  ? `${assignment.available}T00:00`
-                  : "2025-05-06T00:00"
-              }
-            />
-          </Col>
-          <Col>
-            <Form.Label>Until</Form.Label>
-            <Form.Control type="datetime-local" />
-          </Col>
-        </Row>
+          </Form.Group>
 
-        {/* Buttons */}
-        <div className="mt-4">
-          <Link href={`/Courses/${cid}/Assignments`}>
-            <Button variant="danger" type="button" className="me-2">
-              Save
-            </Button>
-          </Link>
-          <Link href={`/Courses/${cid}/Assignments`}>
-            <Button variant="secondary" type="button">
+          {/* Assign section */}
+          <h5 className="fw-semibold mt-4">Assign</h5>
+          <Card className="p-3 mt-2 border-0 bg-light">
+            <Row className="align-items-center">
+              <Col md={4} className="mb-3">
+                <Form.Label className="fw-semibold">Due</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={assignment.dueDate}
+                  onChange={(e) =>
+                    setAssignment({
+                      ...assignment,
+                      dueDate: e.target.value,
+                    })
+                  }
+                />
+              </Col>
+
+              <Col md={4} className="mb-3">
+                <Form.Label className="fw-semibold">Available from</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={assignment.availableFrom}
+                  onChange={(e) =>
+                    setAssignment({
+                      ...assignment,
+                      availableFrom: e.target.value,
+                    })
+                  }
+                />
+              </Col>
+
+              <Col md={4} className="mb-3">
+                <Form.Label className="fw-semibold">Until</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={assignment.untilDate}
+                  onChange={(e) =>
+                    setAssignment({
+                      ...assignment,
+                      untilDate: e.target.value,
+                    })
+                  }
+                />
+              </Col>
+            </Row>
+          </Card>
+
+          {/* Buttons */}
+          <div className="d-flex justify-content-end mt-4">
+            <Button
+              variant="secondary"
+              className="me-2"
+              onClick={handleCancel}
+            >
               Cancel
             </Button>
-          </Link>
-        </div>
-      </Form>
+            <Button variant="danger" onClick={handleSave}>
+              Save
+            </Button>
+          </div>
+        </Form>
+      </Card>
     </div>
   );
 }

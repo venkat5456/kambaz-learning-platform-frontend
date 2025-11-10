@@ -1,66 +1,94 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import * as db from "../../../Database";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { ListGroup, ListGroupItem, FormControl } from "react-bootstrap";
+import { BsGripVertical } from "react-icons/bs";
+import ModulesControls from "./ModulesControls";
 import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
-import ModulesControls from "./ModulesControls";
-import { BsGripVertical } from "react-icons/bs";
-
-// ✅ Define proper interfaces
-interface Lesson {
-  _id: string;
-  name: string;
-}
-
-interface Module {
-  _id: string;
-  course: string;
-  name: string;
-  lessons: Lesson[];
-}
+import { RootState } from "../../../store";
+import {
+  addModule,
+  deleteModule,
+  editModule,
+  updateModule,
+} from "./reducer";
+import React, { useState } from "react";
 
 export default function ModulesPage() {
   const { cid } = useParams(); // e.g., "CS1234"
+  const dispatch = useDispatch();
 
-  // ✅ Safely cast JSON data
-  const modules: Module[] = db.modules as Module[];
+  // ✅ Access global modules state from Redux
+  const { modules } = useSelector((state: RootState) => state.modulesReducer);
 
-  // ✅ Filter modules by selected course
-  const filteredModules: Module[] = modules.filter(
-    (m: Module) => m.course === cid
-  );
+  // ✅ Local state for module input only
+  const [moduleName, setModuleName] = useState("");
 
   return (
-    <div className="p-3">
-      <ModulesControls />
-      <br />
-      <br />
+    <div className="p-3 wd-modules">
+      {/* ✅ Top control bar */}
+      <ModulesControls
+        moduleName={moduleName}
+        setModuleName={setModuleName}
+        addModule={() => {
+          dispatch(addModule({ name: moduleName, course: cid }));
+          setModuleName("");
+        }}
+      />
       <br />
       <br />
 
-      <ListGroup className="rounded-0" id="wd-modules">
-        {filteredModules.length === 0 ? (
-          <p>No modules found for this course.</p>
-        ) : (
-          filteredModules.map((module: Module, index: number) => (
+      {/* ✅ Render modules */}
+      <ListGroup id="wd-modules" className="rounded-0">
+        {modules
+          .filter((module: any) => module.course === cid)
+          .map((module: any) => (
             <ListGroupItem
-              key={index}
+              key={module._id}
               className="wd-module p-0 mb-5 fs-5 border-gray"
             >
-              {/* Module title */}
+              {/* Module header */}
               <div className="wd-title p-3 ps-2 bg-secondary d-flex justify-content-between align-items-center text-white">
-                <div>
-                  <BsGripVertical className="me-2 fs-3" /> {module.name}
+                {/* Left side: show name or editable input */}
+                <div className="d-flex align-items-center w-100">
+                  <BsGripVertical className="me-2 fs-3" />
+                  {!module.editing && <span>{module.name}</span>}
+                  {module.editing && (
+                    <FormControl
+                      className="w-50 d-inline-block"
+                      onChange={(e) =>
+                        dispatch(
+                          updateModule({ ...module, name: e.target.value })
+                        )
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          dispatch(
+                            updateModule({ ...module, editing: false })
+                          );
+                        }
+                      }}
+                      defaultValue={module.name}
+                    />
+                  )}
                 </div>
-                <ModuleControlButtons />
+
+                {/* Right side: control icons */}
+                <ModuleControlButtons
+                  moduleId={module._id}
+                  deleteModule={(moduleId) =>
+                    dispatch(deleteModule(moduleId))
+                  }
+                  editModule={(moduleId) => dispatch(editModule(moduleId))}
+                />
               </div>
 
-              {/* Lessons inside the module */}
+              {/* Lessons section */}
               {module.lessons && module.lessons.length > 0 ? (
                 <ListGroup className="wd-lessons rounded-0">
-                  {module.lessons.map((lesson: Lesson, i: number) => (
+                  {module.lessons.map((lesson: any, i: number) => (
                     <ListGroupItem
                       key={i}
                       className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center"
@@ -73,11 +101,12 @@ export default function ModulesPage() {
                   ))}
                 </ListGroup>
               ) : (
-                <p className="p-3 text-muted">No lessons found in this module.</p>
+                <p className="p-3 text-muted mb-0">
+                  No lessons found in this module.
+                </p>
               )}
             </ListGroupItem>
-          ))
-        )}
+          ))}
       </ListGroup>
     </div>
   );
