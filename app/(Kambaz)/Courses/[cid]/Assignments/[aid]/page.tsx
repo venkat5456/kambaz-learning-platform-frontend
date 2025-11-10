@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "../reducer";
 import { v4 as uuidv4 } from "uuid";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
-import { RootState } from "../../../../../store"; // ✅ replace require()
+import { RootState } from "../../../../store";
   
 // ✅ Define Assignment interface for strong typing
 interface Assignment {
