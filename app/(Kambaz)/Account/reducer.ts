@@ -1,7 +1,24 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// ✅ Initial state: no user is signed in
-const initialState = {
+// ✅ Define a User interface
+export interface User {
+  _id: string;
+  username: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  dob?: string;
+  role?: string; // <-- Added so .role works everywhere
+}
+
+// ✅ Define state type
+interface AccountState {
+  currentUser: User | null;
+}
+
+// ✅ Initial state
+const initialState: AccountState = {
   currentUser: null,
 };
 
@@ -11,7 +28,7 @@ const accountSlice = createSlice({
   initialState,
   reducers: {
     // Sets or clears the current user
-    setCurrentUser: (state, action) => {
+    setCurrentUser: (state, action: PayloadAction<User | null>) => {
       state.currentUser = action.payload;
     },
   },
