@@ -48,8 +48,7 @@ export default function AssignmentsPage() {
   const courseAssignments = assignments.filter((a) => a.course === cid);
 
   // ✅ Role-based access (faculty only can add/edit/delete)
-  const isFaculty = currentUser?.role === "faculty";
-
+  const isFaculty = currentUser?.role === "FACULTY";
   return (
     <div id="wd-assignments" className="p-3">
       {/* Header */}
