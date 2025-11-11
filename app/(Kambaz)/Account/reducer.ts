@@ -2,14 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // ✅ Define a User interface with strong role typing
 export interface User {
-  _id: string;
+  _id?: string; 
   username: string;
   password: string;
   firstName?: string;
   lastName?: string;
   email?: string;
   dob?: string;
-  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT"; // ✅ restricted union type
+  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
 }
 
 // ✅ Define state type
