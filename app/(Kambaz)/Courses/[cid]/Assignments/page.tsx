@@ -17,7 +17,7 @@ import { MdAssignment } from "react-icons/md";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../store";
+import { RootState } from "../../../store";
 import { deleteAssignment } from "./reducer";
 
 // ✅ Define assignment interface
