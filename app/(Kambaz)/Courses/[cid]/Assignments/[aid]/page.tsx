@@ -4,21 +4,10 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "../reducer";
+import type { Assignment } from "../reducer"; // ✅ reuse shared type
 import { v4 as uuidv4 } from "uuid";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
-import { RootState } from "../../../../store";
-  
-// ✅ Define Assignment interface for strong typing
-interface Assignment {
-  _id: string;
-  course: string | string[] | undefined;
-  title: string;
-  description: string;
-  points: number;
-  availableFrom: string;
-  dueDate: string;
-  untilDate: string;
-}
+import { RootState } from "../../../../store"; // ✅ correct path (4 levels up)
 
 export default function AssignmentEditorPage() {
   const { cid, aid } = useParams();
@@ -30,15 +19,16 @@ export default function AssignmentEditorPage() {
     (state: RootState) => state.assignmentsReducer
   );
 
-  // ✅ Type-safe lookup instead of (a: any)
+  // ✅ Type-safe lookup (TypeScript infers Assignment from Redux slice)
   const existing = assignments.find(
-    (a: Assignment) => a.course === cid && a._id === aid
+    (a) => a.course === cid && a._id === aid
   );
 
+  // ✅ Ensure all optional fields are defined
   const [assignment, setAssignment] = useState<Assignment>(
     existing || {
       _id: aid === "new" ? uuidv4() : (aid as string),
-      course: cid,
+      course: cid as string,
       title: "New Assignment",
       description: "New Assignment Description",
       points: 100,
@@ -99,7 +89,7 @@ export default function AssignmentEditorPage() {
             <Form.Label className="fw-semibold">Points</Form.Label>
             <Form.Control
               type="number"
-              value={assignment.points}
+              value={assignment.points || 0}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setAssignment({
                   ...assignment,
@@ -117,7 +107,7 @@ export default function AssignmentEditorPage() {
                 <Form.Label className="fw-semibold">Due</Form.Label>
                 <Form.Control
                   type="date"
-                  value={assignment.dueDate}
+                  value={assignment.dueDate || ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setAssignment({ ...assignment, dueDate: e.target.value })
                   }
@@ -128,7 +118,7 @@ export default function AssignmentEditorPage() {
                 <Form.Label className="fw-semibold">Available from</Form.Label>
                 <Form.Control
                   type="date"
-                  value={assignment.availableFrom}
+                  value={assignment.availableFrom || ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setAssignment({
                       ...assignment,
@@ -142,7 +132,7 @@ export default function AssignmentEditorPage() {
                 <Form.Label className="fw-semibold">Until</Form.Label>
                 <Form.Control
                   type="date"
-                  value={assignment.untilDate}
+                  value={assignment.untilDate || ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setAssignment({
                       ...assignment,
