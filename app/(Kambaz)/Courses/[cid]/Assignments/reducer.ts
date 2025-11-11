@@ -5,10 +5,11 @@ export interface Assignment {
   _id: string;
   course: string;
   title: string;
-  description?: string;
+  description: string;
   points?: number;
   availableFrom?: string;
   dueDate?: string;
+  untilDate?: string;   
 }
 
 const initialState = {
