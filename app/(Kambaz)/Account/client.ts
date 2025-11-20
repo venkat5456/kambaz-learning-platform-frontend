@@ -49,7 +49,10 @@ export const profile = async (): Promise<User> => {
 };
 
 // UPDATE USER
-export const updateUser = async (userId: string, user: Partial<User>): Promise<User> => {
+export const updateUser = async (
+  userId: string,
+  user: Record<string, unknown>
+) => {
   const response = await axiosWithCredentials.put(
     `${USERS_API}/${userId}`,
     user
