@@ -14,7 +14,7 @@ export interface Module {
   name: string;
   course: string | string[] | undefined;
   editing?: boolean;
-  lessons?: Lesson[]; // ✅ made optional (safe and realistic)
+  lessons?: Lesson[]; // optional
 }
 
 /** ✅ The Redux state shape for modules */
@@ -32,6 +32,11 @@ const modulesSlice = createSlice({
   name: "modules",
   initialState,
   reducers: {
+    /** 🆕 Set modules from server (NEW) */
+    setModules: (state, action: PayloadAction<Module[]>) => {
+      state.modules = action.payload;
+    },
+
     /** ➕ Add a new module */
     addModule: (
       state,
@@ -41,7 +46,7 @@ const modulesSlice = createSlice({
         _id: uuidv4(),
         name: action.payload.name || "New Module",
         course: action.payload.course,
-        lessons: [], // always start empty
+        lessons: [],
         editing: false,
       };
       state.modules.push(newModule);
@@ -52,14 +57,14 @@ const modulesSlice = createSlice({
       state.modules = state.modules.filter((m) => m._id !== action.payload);
     },
 
-    /** ✏️ Update module (e.g., name or editing flag) */
+    /** ✏️ Update module */
     updateModule: (state, action: PayloadAction<Module>) => {
       state.modules = state.modules.map((m) =>
         m._id === action.payload._id ? action.payload : m
       );
     },
 
-    /** 🖊️ Enable editing mode for a module */
+    /** 🖊️ Enable editing mode */
     editModule: (state, action: PayloadAction<string>) => {
       state.modules = state.modules.map((m) =>
         m._id === action.payload ? { ...m, editing: true } : m
@@ -68,7 +73,13 @@ const modulesSlice = createSlice({
   },
 });
 
-/** ✅ Export actions and reducer */
-export const { addModule, deleteModule, updateModule, editModule } =
-  modulesSlice.actions;
+/** 🚀 Export actions and reducer */
+export const {
+  addModule,
+  deleteModule,
+  updateModule,
+  editModule,
+  setModules, // NEW export
+} = modulesSlice.actions;
+
 export default modulesSlice.reducer;

@@ -4,57 +4,30 @@ import Link from "next/link";
 import { useState } from "react";
 import { FormControl, Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
+import { redirect } from "next/navigation";
 import { setCurrentUser } from "../reducer";
-import * as db from "../../Database";
-import { redirect } from "next/dist/client/components/navigation";
-import { v4 as uuidv4 } from "uuid";
-
-// ✅ Define consistent Credential and User types
-interface Credentials {
-  username: string;
-  password: string;
-}
-
-interface User {
-  _id: string;
-  username: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  dob: string;
-  role: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
-}
+import * as client from "../client";
 
 export default function Signup() {
-  // ✅ Replace `any` with specific Credentials type
-  const [credentials, setCredentials] = useState<Credentials>({
+  const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
 
   const dispatch = useDispatch();
 
-  const signup = (): void => {
-    // ✅ Create a new user object (typed)
-    const newUser: User = {
-      _id: uuidv4(),
-      username: credentials.username,
+  const signup = async () => {
+    const newUser = await client.signup({
+      loginId: credentials.username,
       password: credentials.password,
-      firstName: credentials.username,
-      lastName: "",
-      email: `${credentials.username}@example.com`,
-      dob: "2000-01-01",
-      role: "USER",
-    };
+    });
 
-    // ✅ Add the new user to in-memory DB
-    (db.users as User[]).push(newUser);
+    if (!newUser) {
+      alert("Signup failed");
+      return;
+    }
 
-    // ✅ Save the new user as current user in Redux
     dispatch(setCurrentUser(newUser));
-
-    // ✅ Redirect to Dashboard
     redirect("/Dashboard");
   };
 
@@ -67,26 +40,26 @@ export default function Signup() {
         placeholder="username"
         className="mb-2"
         value={credentials.username}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(e) =>
           setCredentials({ ...credentials, username: e.target.value })
         }
       />
 
       <FormControl
         id="wd-password"
-        placeholder="password"
         type="password"
+        placeholder="password"
         className="mb-2"
         value={credentials.password}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(e) =>
           setCredentials({ ...credentials, password: e.target.value })
         }
       />
 
       <Button
         id="wd-signup-btn"
-        onClick={signup}
         className="btn btn-primary w-100 mb-2"
+        onClick={signup}
       >
         Sign Up
       </Button>

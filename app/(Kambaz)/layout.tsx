@@ -5,6 +5,7 @@ import KambazNavigation from "./Navigation";
 import "./styles.css"; 
 import store from "./store"; 
 import { Provider } from "react-redux"; 
+import Session from "./Account/Session";  // ⭐ ADD THIS IMPORT
 
 export default function KambazLayout({
   children,
@@ -13,15 +14,17 @@ export default function KambazLayout({
 }) {
   return (
     <Provider store={store}>
-      <div id="wd-kambaz">
-        {/* Sidebar (fixed position) */}
-        <KambazNavigation />
+      <Session> {/* ⭐ CHECK SESSION BEFORE RENDERING APP */}
+        <div id="wd-kambaz">
+          {/* Sidebar (fixed position) */}
+          <KambazNavigation />
 
-        {/* Main content offset so it doesn't go under sidebar */}
-        <div className="wd-main-content-offset p-3 flex-fill">
-          {children}
+          {/* Main content */}
+          <div className="wd-main-content-offset p-3 flex-fill">
+            {children}
+          </div>
         </div>
-      </div>
+      </Session>
     </Provider>
   );
 }

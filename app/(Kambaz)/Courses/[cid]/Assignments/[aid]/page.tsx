@@ -1,30 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { addAssignment, updateAssignment } from "../reducer";
-import type { Assignment } from "../reducer"; // ✅ reuse shared type
+import type { Assignment } from "../reducer";
+import { RootState } from "../../../../store";
 import { v4 as uuidv4 } from "uuid";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
-import { RootState } from "../../../../store"; // ✅ correct path (4 levels up)
+
+// ⭐ Backend axios client (FIXED PATH)
+import {
+  createAssignment,
+  updateAssignment as updateAssignmentBackend,
+  findAssignmentById,
+} from "../client"; // <-- FIXED HERE
 
 export default function AssignmentEditorPage() {
   const { cid, aid } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // ✅ Typed selector
   const { assignments } = useSelector(
     (state: RootState) => state.assignmentsReducer
   );
 
-  // ✅ Type-safe lookup (TypeScript infers Assignment from Redux slice)
   const existing = assignments.find(
     (a) => a.course === cid && a._id === aid
   );
 
-  // ✅ Ensure all optional fields are defined
   const [assignment, setAssignment] = useState<Assignment>(
     existing || {
       _id: aid === "new" ? uuidv4() : (aid as string),
@@ -38,17 +42,27 @@ export default function AssignmentEditorPage() {
     }
   );
 
-  // ✅ Handlers
-  const handleSave = (): void => {
+  // 🔥 Load from backend also if editing existing
+  useEffect(() => {
+    const loadFromBackend = async () => {
+      if (aid !== "new" && !existing) {
+        const data = await findAssignmentById(aid as string);
+        setAssignment(data);
+        dispatch(updateAssignment(data));
+      }
+    };
+    loadFromBackend();
+  }, [aid]);
+
+  const handleSave = async (): Promise<void> => {
     if (existing) {
+      await updateAssignmentBackend(assignment._id!, assignment);
       dispatch(updateAssignment(assignment));
     } else {
-      dispatch(addAssignment(assignment));
+      const created = await createAssignment(assignment);
+      dispatch(addAssignment(created));
     }
-    router.push(`/Courses/${cid}/Assignments`);
-  };
 
-  const handleCancel = (): void => {
     router.push(`/Courses/${cid}/Assignments`);
   };
 
@@ -60,37 +74,34 @@ export default function AssignmentEditorPage() {
 
       <Card className="p-4 shadow-sm border-0">
         <Form>
-          {/* Assignment Name */}
           <Form.Group className="mb-3" controlId="assignmentTitle">
             <Form.Label className="fw-semibold">Assignment Name</Form.Label>
             <Form.Control
               type="text"
               value={assignment.title}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e) =>
                 setAssignment({ ...assignment, title: e.target.value })
               }
             />
           </Form.Group>
 
-          {/* Description */}
           <Form.Group className="mb-3" controlId="assignmentDescription">
             <Form.Control
               as="textarea"
               rows={4}
               value={assignment.description}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onChange={(e) =>
                 setAssignment({ ...assignment, description: e.target.value })
               }
             />
           </Form.Group>
 
-          {/* Points */}
           <Form.Group className="mb-3" controlId="assignmentPoints">
             <Form.Label className="fw-semibold">Points</Form.Label>
             <Form.Control
               type="number"
               value={assignment.points || 0}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e) =>
                 setAssignment({
                   ...assignment,
                   points: Number(e.target.value),
@@ -99,27 +110,26 @@ export default function AssignmentEditorPage() {
             />
           </Form.Group>
 
-          {/* Assign Section */}
           <h5 className="fw-semibold mt-4">Assign</h5>
           <Card className="p-3 mt-2 border-0 bg-light">
             <Row className="align-items-center">
-              <Col md={4} className="mb-3">
-                <Form.Label className="fw-semibold">Due</Form.Label>
+              <Col md={4}>
+                <Form.Label>Due</Form.Label>
                 <Form.Control
                   type="date"
                   value={assignment.dueDate || ""}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange={(e) =>
                     setAssignment({ ...assignment, dueDate: e.target.value })
                   }
                 />
               </Col>
 
-              <Col md={4} className="mb-3">
-                <Form.Label className="fw-semibold">Available from</Form.Label>
+              <Col md={4}>
+                <Form.Label>Available from</Form.Label>
                 <Form.Control
                   type="date"
                   value={assignment.availableFrom || ""}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange={(e) =>
                     setAssignment({
                       ...assignment,
                       availableFrom: e.target.value,
@@ -128,12 +138,12 @@ export default function AssignmentEditorPage() {
                 />
               </Col>
 
-              <Col md={4} className="mb-3">
-                <Form.Label className="fw-semibold">Until</Form.Label>
+              <Col md={4}>
+                <Form.Label>Until</Form.Label>
                 <Form.Control
                   type="date"
                   value={assignment.untilDate || ""}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange={(e) =>
                     setAssignment({
                       ...assignment,
                       untilDate: e.target.value,
@@ -144,9 +154,14 @@ export default function AssignmentEditorPage() {
             </Row>
           </Card>
 
-          {/* Buttons */}
           <div className="d-flex justify-content-end mt-4">
-            <Button variant="secondary" className="me-2" onClick={handleCancel}>
+            <Button
+              variant="secondary"
+              className="me-2"
+              onClick={() =>
+                router.push(`/Courses/${cid}/Assignments`)
+              }
+            >
               Cancel
             </Button>
             <Button variant="danger" onClick={handleSave}>

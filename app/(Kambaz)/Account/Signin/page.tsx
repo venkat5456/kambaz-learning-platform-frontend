@@ -2,53 +2,32 @@
 "use client";
 
 import Link from "next/link";
-import { redirect } from "next/dist/client/components/navigation";
+import { redirect } from "next/navigation";
 import { setCurrentUser } from "../reducer";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import * as db from "../../Database";
 import { FormControl, Button } from "react-bootstrap";
-
-// ✅ Define consistent User type
-interface User {
-  _id?: string;
-  username: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
-}
-
-// ✅ Define credentials type for signin form
-interface Credentials {
-  username: string;
-  password: string;
-}
+import * as client from "../client";
 
 export default function Signin() {
-  const [credentials, setCredentials] = useState<Credentials>({
+  const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
 
   const dispatch = useDispatch();
 
-  const signin = (): void => {
-    // find user in db.users that matches credentials
-    const user = (db.users as User[]).find(
-      (u) =>
-        u.username === credentials.username &&
-        u.password === credentials.password
-    );
+  const signin = async () => {
+    const user = await client.signin({
+      username: credentials.username,
+      password: credentials.password,
+    });
 
-    // if no user found, stop
     if (!user) {
-      alert("Invalid username or password");
+      alert("Invalid credentials");
       return;
     }
 
-    // store user in Redux and go to Dashboard
     dispatch(setCurrentUser(user));
     redirect("/Dashboard");
   };
@@ -62,7 +41,7 @@ export default function Signin() {
         placeholder="username"
         className="mb-2"
         value={credentials.username}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(e) =>
           setCredentials({ ...credentials, username: e.target.value })
         }
       />
@@ -73,7 +52,7 @@ export default function Signin() {
         type="password"
         className="mb-2"
         value={credentials.password}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange={(e) =>
           setCredentials({ ...credentials, password: e.target.value })
         }
       />
