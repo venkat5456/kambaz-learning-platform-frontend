@@ -9,6 +9,9 @@ import { RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
 import * as client from "../client";
 
+// Backend supports only these 3 roles ❗
+type UserRole = "USER" | "FACULTY" | "STUDENT";
+
 interface Profile {
   _id?: string;
   username?: string;
@@ -17,7 +20,7 @@ interface Profile {
   lastName?: string;
   dob?: string;
   email?: string;
-  role?: "USER" | "ADMIN" | "FACULTY" | "STUDENT";
+  role?: UserRole;
 }
 
 export default function Profile() {
@@ -31,12 +34,12 @@ export default function Profile() {
   };
 
   const updateProfile = async () => {
-  if (!profile._id) return;
-  const updatedProfile = await client.updateUser(profile._id, profile);
-  dispatch(setCurrentUser(updatedProfile));
-  alert("Profile updated successfully!");
-};
-
+    if (!profile._id) return;
+    // Correct argument order: (userId, userData)
+    const updatedProfile = await client.updateUser(profile._id, profile);
+    dispatch(setCurrentUser(updatedProfile));
+    alert("Profile updated successfully!");
+  };
 
   const signout = async () => {
     await client.signout();
@@ -59,9 +62,7 @@ export default function Profile() {
             placeholder="Username"
             value={profile.username || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, username: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, username: e.target.value })}
           />
 
           <FormControl
@@ -70,9 +71,7 @@ export default function Profile() {
             type="password"
             value={profile.password || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, password: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, password: e.target.value })}
           />
 
           <FormControl
@@ -80,9 +79,7 @@ export default function Profile() {
             placeholder="First Name"
             value={profile.firstName || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, firstName: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
           />
 
           <FormControl
@@ -90,9 +87,7 @@ export default function Profile() {
             placeholder="Last Name"
             value={profile.lastName || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, lastName: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
           />
 
           <FormControl
@@ -100,9 +95,7 @@ export default function Profile() {
             type="date"
             value={profile.dob || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, dob: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, dob: e.target.value })}
           />
 
           <FormControl
@@ -111,40 +104,25 @@ export default function Profile() {
             placeholder="Email"
             value={profile.email || ""}
             className="mb-2"
-            onChange={(e) =>
-              setProfile({ ...profile, email: e.target.value })
-            }
+            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
           />
 
           <select
             id="wd-role"
             className="form-control mb-2"
             value={profile.role || "STUDENT"}
-            onChange={(e) =>
-              setProfile({ ...profile, role: e.target.value as Profile["role"] })
-            }
+            onChange={(e) => setProfile({ ...profile, role: e.target.value as UserRole })}
           >
             <option value="USER">User</option>
-            <option value="ADMIN">Admin</option>
             <option value="FACULTY">Faculty</option>
             <option value="STUDENT">Student</option>
           </select>
 
-          <Button
-            id="wd-update-btn"
-            variant="primary"
-            className="w-100 mt-2"
-            onClick={updateProfile}
-          >
+          <Button id="wd-update-btn" variant="primary" className="w-100 mt-2" onClick={updateProfile}>
             Update
           </Button>
 
-          <Button
-            id="wd-signout-btn"
-            variant="danger"
-            className="w-100 mt-2"
-            onClick={signout}
-          >
+          <Button id="wd-signout-btn" variant="danger" className="w-100 mt-2" onClick={signout}>
             Signout
           </Button>
         </>
