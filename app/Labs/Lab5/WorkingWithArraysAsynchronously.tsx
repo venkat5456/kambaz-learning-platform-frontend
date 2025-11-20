@@ -6,14 +6,7 @@ import { FaTrash, FaPlusCircle } from "react-icons/fa";
 import { TiDelete } from "react-icons/ti";
 import { FaPencil } from "react-icons/fa6";
 import * as client from "./client";
-
-// Define Todo type
-interface Todo {
-  id: number;
-  title: string;
-  completed: boolean;
-  editing?: boolean;
-}
+import type { Todo } from "./client"; // 👈 Import TODO type
 
 export default function WorkingWithArraysAsynchronously() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -33,10 +26,8 @@ export default function WorkingWithArraysAsynchronously() {
     try {
       await client.deleteTodo(todo);
       setTodos(todos.filter((t) => t.id !== todo.id));
-    } catch (err: unknown) {
-      if (err && typeof err === "object" && "response" in err) {
-        setErrorMessage((err as any).response.data.message);
-      }
+    } catch {
+      setErrorMessage("Unable to delete todo");
     }
   };
 
@@ -63,10 +54,8 @@ export default function WorkingWithArraysAsynchronously() {
     try {
       await client.updateTodo(todo);
       setTodos(todos.map((t) => (t.id === todo.id ? todo : t)));
-    } catch (err: unknown) {
-      if (err && typeof err === "object" && "response" in err) {
-        setErrorMessage((err as any).response.data.message);
-      }
+    } catch {
+      setErrorMessage("Unable to update todo");
     }
   };
 
@@ -106,11 +95,13 @@ export default function WorkingWithArraysAsynchronously() {
               className="text-danger float-end mt-1"
               id="wd-remove-todo"
             />
+
             <TiDelete
               onClick={() => deleteTodo(todo)}
               className="text-danger float-end fs-3 me-2"
               id="wd-delete-todo"
             />
+
             <FaPencil
               onClick={() => editTodo(todo)}
               className="text-primary float-end me-2 mt-1"
