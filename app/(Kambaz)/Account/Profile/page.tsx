@@ -31,11 +31,12 @@ export default function Profile() {
   };
 
   const updateProfile = async () => {
-    if (!profile._id) return;
-    const updatedProfile = await client.updateUser(profile);
-    dispatch(setCurrentUser(updatedProfile));
-    alert("Profile updated successfully!");
-  };
+  if (!profile._id) return;
+  const updatedProfile = await client.updateUser(profile._id, profile);
+  dispatch(setCurrentUser(updatedProfile));
+  alert("Profile updated successfully!");
+};
+
 
   const signout = async () => {
     await client.signout();
