@@ -2,42 +2,50 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Row, Col, Card, CardImg, CardBody, CardTitle, Button, FormControl
+  Row, Col, Card, CardImg, CardBody, CardTitle, Button, FormControl,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setCourses } from "../Courses/reducer";
 import { RootState } from "../store";
-
 import * as coursesClient from "../Courses/client";
 import * as enrollClient from "../Enrollments/client";
+import type { Course } from "../Courses/client";
+
+interface Enrollment {
+  _id: string;
+  user: string;
+  course: string;
+}
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
+
   const [enrolledCourseIds, setEnrolledCourseIds] = useState<string[]>([]);
 
-  const isFaculty = currentUser?.role === "FACULTY";
-
-  const [course, setCourse] = useState({
+  const [course, setCourse] = useState<Course>({
     _id: "",
     name: "",
     description: "",
     image: "/images/reactjs.jpg",
   });
 
+  const isFaculty = currentUser?.role === "FACULTY";
+
   const loadDashboardData = async () => {
-    const allCourses = await coursesClient.fetchAllCourses();
+    const allCourses: Course[] = await coursesClient.fetchAllCourses();
     dispatch(setCourses(allCourses));
 
-    if (!isFaculty && currentUser) {
-      const enrollments = await enrollClient.findEnrollments(currentUser._id);
-      setEnrolledCourseIds(enrollments.map((e: any) => e.course));
+    if (!isFaculty && currentUser?._id) {
+      const enrollments: Enrollment[] =
+        await enrollClient.findEnrollments(currentUser._id);
+      setEnrolledCourseIds(enrollments.map((e) => e.course));
     }
   };
 
   useEffect(() => {
-    loadDashboardData();
+    if (currentUser) loadDashboardData();
   }, [currentUser]);
 
   const enroll = async (courseId: string) => {
@@ -48,32 +56,32 @@ export default function Dashboard() {
 
   const createNewCourse = async () => {
     if (!isFaculty) return;
-    const newCourse = await coursesClient.createCourse(course);
-    dispatch(setCourses([...courses, newCourse]));
+    const updatedList = await coursesClient.createCourse(course);
+    dispatch(setCourses(updatedList));
     setCourse({ _id: "", name: "", description: "", image: "/images/reactjs.jpg" });
   };
 
   const updateSelectedCourse = async () => {
     if (!isFaculty || !course._id) return;
-    const updated = await coursesClient.updateCourse(course);
-    dispatch(setCourses(courses.map((c: any) => (c._id === updated._id ? updated : c))));
+    const updatedList = await coursesClient.updateCourse(course);
+    dispatch(setCourses(updatedList));
   };
 
-  const deleteCourse = async (courseId: string) => {
+  const deleteCourseById = async (courseId: string) => {
     if (!isFaculty) return;
-    await coursesClient.deleteCourse(courseId);
-    dispatch(setCourses(courses.filter((c: any) => c._id !== courseId)));
+    const updatedList = await coursesClient.deleteCourse(courseId);
+    dispatch(setCourses(updatedList));
   };
 
-  const myCourses = courses.filter((c: any) => enrolledCourseIds.includes(c._id));
-  const availableCourses = courses.filter((c: any) => !enrolledCourseIds.includes(c._id));
+  const myCourses = courses.filter((c: Course) => enrolledCourseIds.includes(c._id!));
+  const availableCourses = courses.filter((c: Course) => !enrolledCourseIds.includes(c._id!));
 
   return (
     <div id="wd-dashboard" className="p-3">
       <h1>Dashboard</h1>
       <hr />
 
-      {/* ⭐ Course Manage Panel for Faculty */}
+      {/* Faculty controls */}
       {isFaculty && (
         <>
           <h4>Manage Courses</h4>
@@ -86,7 +94,7 @@ export default function Dashboard() {
           <FormControl
             className="mb-2"
             placeholder="Course Description"
-            value={course.description}
+            value={course.description ?? ""}
             onChange={(e) =>
               setCourse({ ...course, description: e.target.value })
             }
@@ -102,7 +110,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* 🧑‍🎓 STUDENT VIEW */}
+      {/* Student View */}
       {!isFaculty && (
         <>
           <h2>My Courses ({myCourses.length})</h2>
@@ -110,7 +118,7 @@ export default function Dashboard() {
             <p>You are not enrolled yet.</p>
           ) : (
             <Row className="g-4 mt-3">
-              {myCourses.map((c: any) => (
+              {myCourses.map((c) => (
                 <Col key={c._id}>
                   <Card>
                     <Link href={`/Courses/${c._id}/Home`} className="text-decoration-none text-dark">
@@ -130,13 +138,13 @@ export default function Dashboard() {
 
           <h2>Available Courses ({availableCourses.length})</h2>
           <Row className="g-4 mt-3">
-            {availableCourses.map((c: any) => (
+            {availableCourses.map((c) => (
               <Col key={c._id}>
                 <Card>
                   <CardImg src={c.image} height={160} />
                   <CardBody>
                     <CardTitle>{c.name}</CardTitle>
-                    <Button variant="success" onClick={() => enroll(c._id)}>
+                    <Button variant="success" onClick={() => enroll(c._id!)}>
                       Enroll
                     </Button>
                   </CardBody>
@@ -147,12 +155,12 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* 🧑‍🏫 FACULTY COURSE LIST */}
+      {/* Faculty View */}
       {isFaculty && (
         <>
           <h2>All Courses ({courses.length})</h2>
           <Row className="g-4 mt-3">
-            {courses.map((c: any) => (
+            {courses.map((c: Course) => (
               <Col key={c._id}>
                 <Card>
                   <Link href={`/Courses/${c._id}/Home`} className="text-decoration-none text-dark">
@@ -163,7 +171,7 @@ export default function Dashboard() {
                         className="btn btn-danger mt-2"
                         onClick={(e) => {
                           e.preventDefault();
-                          deleteCourse(c._id);
+                          deleteCourseById(c._id!);
                         }}
                       >
                         Delete

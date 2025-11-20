@@ -2,14 +2,25 @@
 
 import axios from "axios";
 
+// User Type Definition
+export interface User {
+  _id?: string;
+  username: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  dob?: string;
+  role?: "STUDENT" | "FACULTY" | "USER"; // update if you have more roles
+}
+
 const axiosWithCredentials = axios.create({ withCredentials: true });
 
 export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 export const USERS_API = `${HTTP_SERVER}/api/users`;
 
-
-// CREATE USER (use signup, not generic createUser)
-export const signup = async (credentials: any) => {
+// SIGNUP
+export const signup = async (credentials: User): Promise<User> => {
   const response = await axiosWithCredentials.post(
     `${USERS_API}/signup`,
     credentials
@@ -18,7 +29,7 @@ export const signup = async (credentials: any) => {
 };
 
 // SIGNIN
-export const signin = async (credentials: any) => {
+export const signin = async (credentials: Pick<User, "username" | "password">): Promise<User> => {
   const response = await axiosWithCredentials.post(
     `${USERS_API}/signin`,
     credentials
@@ -27,23 +38,18 @@ export const signin = async (credentials: any) => {
 };
 
 // SIGNOUT
-export const signout = async () => {
-  const response = await axiosWithCredentials.post(
-    `${USERS_API}/signout`
-  );
+export const signout = async (): Promise<void> => {
+  await axiosWithCredentials.post(`${USERS_API}/signout`);
+};
+
+// PROFILE
+export const profile = async (): Promise<User> => {
+  const response = await axiosWithCredentials.get(`${USERS_API}/profile`);
   return response.data;
 };
 
-// PROFILE (🔹 use GET instead of POST)
-export const profile = async () => {
-  const response = await axiosWithCredentials.get(
-    `${USERS_API}/profile`
-  );
-  return response.data;
-};
-
-// UPDATE USER (🔹 will now match backend PUT route)
-export const updateUser = async (userId: string, user: any) => {
+// UPDATE USER
+export const updateUser = async (userId: string, user: Partial<User>): Promise<User> => {
   const response = await axiosWithCredentials.put(
     `${USERS_API}/${userId}`,
     user

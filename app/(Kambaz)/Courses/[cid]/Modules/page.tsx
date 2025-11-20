@@ -9,10 +9,8 @@ import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { RootState } from "../../../store";
 import {
-  addModule,
-  deleteModule,
   editModule,
-  updateModule,
+  updateModule as updateModuleState,
   setModules
 } from "./reducer";
 import * as client from "../../client";
@@ -22,6 +20,7 @@ interface Lesson {
   _id?: string;
   name: string;
 }
+
 interface Module {
   _id: string;
   name: string;
@@ -35,7 +34,7 @@ export default function ModulesPage() {
   const dispatch = useDispatch();
 
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-  const isFaculty = currentUser?.role === "FACULTY"; // 🔒 ROLE CHECK
+  const isFaculty = currentUser?.role === "FACULTY";
 
   const { modules } = useSelector((state: RootState) => state.modulesReducer);
   const [moduleName, setModuleName] = useState<string>("");
@@ -50,33 +49,36 @@ export default function ModulesPage() {
     fetchModules();
   }, [cid]);
 
-  const onCreateModuleForCourse = async () => {
+  const onCreateModuleForCourse = async (): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot create modules!");
     if (!cid) return;
+
     const newModule = await client.createModuleForCourse(cid as string, {
       name: moduleName,
     });
+
     dispatch(setModules([...modules, newModule]));
     setModuleName("");
   };
 
-  const onUpdateModule = async (module: any) => {
+  const onUpdateModule = async (module: Partial<Module>): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot update modules!");
     await client.updateModule(module);
     dispatch(
-      setModules(modules.map((m: any) => (m._id === module._id ? module : m)))
+      setModules(
+        modules.map((m: Module) => (m._id === module._id ? { ...m, ...module } : m))
+      )
     );
   };
 
-  const onRemoveModule = async (moduleId: string) => {
+  const onRemoveModule = async (moduleId: string): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot delete modules!");
     await client.deleteModule(moduleId);
-    dispatch(setModules(modules.filter((m: any) => m._id !== moduleId)));
+    dispatch(setModules(modules.filter((m: Module) => m._id !== moduleId)));
   };
 
   return (
     <div className="p-3 wd-modules">
-      {/* 🔒 Hide Add Module UI for students */}
       {isFaculty && (
         <ModulesControls
           moduleName={moduleName}
@@ -84,10 +86,11 @@ export default function ModulesPage() {
           addModule={onCreateModuleForCourse}
         />
       )}
+
       <br /><br />
 
       <ListGroup id="wd-modules" className="rounded-0">
-        {(modules as Module[]).map((module) => (
+        {modules.map((module: Module) => (
           <ListGroupItem
             key={module._id}
             className="wd-module p-0 mb-5 fs-5 border-gray"
@@ -98,12 +101,12 @@ export default function ModulesPage() {
 
                 {!module.editing && <span>{module.name}</span>}
 
-                {module.editing && isFaculty && ( // 🔒 students cannot edit
+                {module.editing && isFaculty && (
                   <FormControl
                     className="w-50 d-inline-block"
                     value={module.name}
                     onChange={(e) =>
-                      dispatch(updateModule({ ...module, name: e.target.value }))
+                      dispatch(updateModuleState({ ...module, name: e.target.value }))
                     }
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -114,7 +117,6 @@ export default function ModulesPage() {
                 )}
               </div>
 
-              {/* 🔒 Hide edit/delete buttons for students */}
               {isFaculty && (
                 <ModuleControlButtons
                   moduleId={module._id}
@@ -130,8 +132,6 @@ export default function ModulesPage() {
                   <ListGroupItem key={i} className="wd-lesson p-3 ps-1">
                     <BsGripVertical className="me-2 fs-3" />
                     {lesson.name}
-
-                    {/* Optional: You may hide lesson controls for students too */}
                     {isFaculty && <LessonControlButtons />}
                   </ListGroupItem>
                 ))}
