@@ -20,7 +20,7 @@ interface Profile {
   lastName?: string;
   dob?: string;
   email?: string;
-  role?: UserRole;
+  role?: string; 
 }
 
 export default function Profile() {
