@@ -10,13 +10,14 @@ import {
   updateTodoCompleted,
   updateTodoDescription,
 } from "./todosClient";
+import type { Todo } from "./todosClient";
 
 export default function TodosClient() {
-  const [todos, setTodos] = useState([]);
-  const [todoId, setTodoId] = useState("1");
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newCompleted, setNewCompleted] = useState(false);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todoId, setTodoId] = useState<string>("1");
+  const [newTitle, setNewTitle] = useState<string>("");
+  const [newDescription, setNewDescription] = useState<string>("");
+  const [newCompleted, setNewCompleted] = useState<boolean>(false);
 
   // LOAD ALL TODOS
   const loadTodos = async () => {
@@ -37,17 +38,16 @@ export default function TodosClient() {
   };
 
   const deleteOne = async () => {
-  if (!todoId) return alert("Please enter a Todo ID");
+    if (!todoId) return alert("Please enter a Todo ID");
 
-  try {
-    const updated = await deleteTodo(todoId);
-    alert(`Deleted Todo with ID: ${todoId}`);
-    setTodos(updated);
-  } catch (err) {
-    alert(`ERROR: Unable to delete Todo with ID: ${todoId}`);
-  }
-};
-
+    try {
+      const updated = await deleteTodo(todoId);
+      alert(`Deleted Todo with ID: ${todoId}`);
+      setTodos(updated);
+    } catch {
+      alert(`ERROR: Unable to delete Todo with ID: ${todoId}`);
+    }
+  };
 
   // UPDATE TITLE
   const updateTitleClick = async () => {
@@ -78,7 +78,7 @@ export default function TodosClient() {
       </button>
 
       <ul>
-        {todos.map((t: any) => (
+        {todos.map((t) => (
           <li key={t.id}>
             {t.id}. {t.title} — completed: {t.completed ? "true" : "false"}
           </li>
