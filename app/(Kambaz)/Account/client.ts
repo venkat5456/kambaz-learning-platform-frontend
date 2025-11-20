@@ -11,7 +11,8 @@ export interface User {
   lastName?: string;
   email?: string;
   dob?: string;
-  role?: "STUDENT" | "FACULTY" | "USER"; // update if you have more roles
+  role?: "STUDENT" | "FACULTY" | "USER";
+  [key: string]: unknown; // ⭐ Allow dynamic key/value pairs
 }
 
 const axiosWithCredentials = axios.create({ withCredentials: true });
@@ -29,7 +30,9 @@ export const signup = async (credentials: User): Promise<User> => {
 };
 
 // SIGNIN
-export const signin = async (credentials: Pick<User, "username" | "password">): Promise<User> => {
+export const signin = async (
+  credentials: Pick<User, "username" | "password">
+): Promise<User> => {
   const response = await axiosWithCredentials.post(
     `${USERS_API}/signin`,
     credentials
@@ -48,11 +51,11 @@ export const profile = async (): Promise<User> => {
   return response.data;
 };
 
-// UPDATE USER
+// UPDATE USER (⭐ fully typed and Vercel-safe)
 export const updateUser = async (
   userId: string,
-  user: Record<string, unknown>
-) => {
+  user: User
+): Promise<User> => {
   const response = await axiosWithCredentials.put(
     `${USERS_API}/${userId}`,
     user

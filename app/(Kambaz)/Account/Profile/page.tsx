@@ -12,6 +12,7 @@ import * as client from "../client";
 // Backend supports only these 3 roles ❗
 type UserRole = "USER" | "FACULTY" | "STUDENT";
 
+// ⭐ Allow sending dynamic JSON keys to backend
 interface Profile {
   _id?: string;
   username?: string;
@@ -20,7 +21,8 @@ interface Profile {
   lastName?: string;
   dob?: string;
   email?: string;
-  role?: string; 
+  role?: UserRole | string;
+  [key: string]: unknown;
 }
 
 export default function Profile() {
@@ -30,13 +32,17 @@ export default function Profile() {
 
   const fetchProfile = () => {
     if (!currentUser) return redirect("/Account/Signin");
-    setProfile(currentUser);
+    setProfile({ ...currentUser }); // ⭐ Force strongly typed state
   };
 
   const updateProfile = async () => {
     if (!profile._id) return;
-    // Correct argument order: (userId, userData)
-    const updatedProfile = await client.updateUser(profile._id, profile);
+
+    const updatedProfile = await client.updateUser(
+      profile._id,
+      profile as Record<string, unknown> // ⭐ Fix TS type requirement
+    );
+
     dispatch(setCurrentUser(updatedProfile));
     alert("Profile updated successfully!");
   };
@@ -111,7 +117,7 @@ export default function Profile() {
             id="wd-role"
             className="form-control mb-2"
             value={profile.role || "STUDENT"}
-            onChange={(e) => setProfile({ ...profile, role: e.target.value as UserRole })}
+            onChange={(e) => setProfile({ ...profile, role: e.target.value })}
           >
             <option value="USER">User</option>
             <option value="FACULTY">Faculty</option>
