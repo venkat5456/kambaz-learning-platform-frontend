@@ -7,26 +7,36 @@ import { TiDelete } from "react-icons/ti";
 import { FaPencil } from "react-icons/fa6";
 import * as client from "./client";
 
+// Define Todo type
+interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+  editing?: boolean;
+}
+
 export default function WorkingWithArraysAsynchronously() {
-  const [todos, setTodos] = useState<any[]>([]);
-  const [errorMessage, setErrorMessage] = useState<any>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchTodos = async () => {
     const data = await client.fetchTodos();
     setTodos(data);
   };
 
-  const removeTodo = async (todo: any) => {
+  const removeTodo = async (todo: Todo) => {
     const updated = await client.removeTodo(todo);
     setTodos(updated);
   };
 
-  const deleteTodo = async (todo: any) => {
+  const deleteTodo = async (todo: Todo) => {
     try {
       await client.deleteTodo(todo);
       setTodos(todos.filter((t) => t.id !== todo.id));
-    } catch (err: any) {
-      setErrorMessage(err.response.data.message);
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "response" in err) {
+        setErrorMessage((err as any).response.data.message);
+      }
     }
   };
 
@@ -43,22 +53,20 @@ export default function WorkingWithArraysAsynchronously() {
     setTodos([...todos, newTodo]);
   };
 
-  const editTodo = (todo: any) => {
+  const editTodo = (todo: Todo) => {
     setTodos(
-      todos.map((t) =>
-        t.id === todo.id ? { ...t, editing: true } : t
-      )
+      todos.map((t) => (t.id === todo.id ? { ...t, editing: true } : t))
     );
   };
 
-  const updateTodo = async (todo: any) => {
+  const updateTodo = async (todo: Todo) => {
     try {
       await client.updateTodo(todo);
-      setTodos(
-        todos.map((t) => (t.id === todo.id ? todo : t))
-      );
-    } catch (err: any) {
-      setErrorMessage(err.response.data.message);
+      setTodos(todos.map((t) => (t.id === todo.id ? todo : t)));
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "response" in err) {
+        setErrorMessage((err as any).response.data.message);
+      }
     }
   };
 
@@ -98,13 +106,11 @@ export default function WorkingWithArraysAsynchronously() {
               className="text-danger float-end mt-1"
               id="wd-remove-todo"
             />
-
             <TiDelete
               onClick={() => deleteTodo(todo)}
               className="text-danger float-end fs-3 me-2"
               id="wd-delete-todo"
             />
-
             <FaPencil
               onClick={() => editTodo(todo)}
               className="text-primary float-end me-2 mt-1"
