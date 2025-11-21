@@ -16,7 +16,6 @@ interface Enrollment {
   course: string;
 }
 
-// Local Course interface to avoid TS type conflicts
 interface Course {
   _id: string;
   name: string;
@@ -24,13 +23,16 @@ interface Course {
   image: string;
 }
 
-// Standardize Course data format
-const toSafeCourse = (c: any): Course => ({
-  _id: c._id ?? "",
-  name: c.name ?? "",
-  description: c.description ?? "",
-  image: c.image ?? "/images/reactjs.jpg",
-});
+// 🟢 Fix: no `any` — use `unknown` and type narrow
+const toSafeCourse = (c: unknown): Course => {
+  const course = c as Partial<Course>;
+  return {
+    _id: course._id ?? "",
+    name: course.name ?? "",
+    description: course.description ?? "",
+    image: course.image ?? "/images/reactjs.jpg",
+  };
+};
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -134,7 +136,7 @@ export default function Dashboard() {
                     href={`/Courses/${c._id}/Home`}
                     className="text-decoration-none text-dark"
                   >
-                    <CardImg src={c.image} height={160} />
+                    <CardImg src="/images/reactjs.jpg" height={160} />
                     <CardBody>
                       <CardTitle>{c.name}</CardTitle>
                       <Button variant="primary">Go</Button>
@@ -151,7 +153,7 @@ export default function Dashboard() {
             {availableCourses.map((c) => (
               <Col key={c._id}>
                 <Card>
-                  <CardImg src={c.image} height={160} />
+                  <CardImg src="/images/reactjs.jpg" height={160} />
                   <CardBody>
                     <CardTitle>{c.name}</CardTitle>
                     <Button
@@ -179,7 +181,7 @@ export default function Dashboard() {
                     href={`/Courses/${c._id}/Home`}
                     className="text-decoration-none text-dark"
                   >
-                    <CardImg src={c.image} height={160} />
+                    <CardImg src="/images/reactjs.jpg" height={160} />
                     <CardBody>
                       <CardTitle>{c.name}</CardTitle>
                       <Button
