@@ -43,7 +43,10 @@ export default function Home() {
     alert("Please sign in first!");
     return;
   }
-  const result = await enrollUserInCourse(currentUser._id, cid);
+
+  const courseId = Array.isArray(cid) ? cid[0] : cid; // 👈 Force to string
+
+  const result = await enrollUserInCourse(currentUser._id, courseId);
   setEnrollmentId(result._id);
 };
 
