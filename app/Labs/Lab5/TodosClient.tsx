@@ -10,7 +10,14 @@ import {
   updateTodoCompleted,
   updateTodoDescription,
 } from "./todosClient";
-import type { Todo } from "./todosClient";
+
+// ✅ Add Todo type here to remove red underline
+export interface Todo {
+  id: string | number;
+  title?: string;
+  description?: string;
+  completed?: boolean;
+}
 
 export default function TodosClient() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,19 +26,16 @@ export default function TodosClient() {
   const [newDescription, setNewDescription] = useState<string>("");
   const [newCompleted, setNewCompleted] = useState<boolean>(false);
 
-  // LOAD ALL TODOS
   const loadTodos = async () => {
     const data = await fetchTodos();
     setTodos(data);
   };
 
-  // GET ONE TODO
   const getTodo = async () => {
     const todo = await fetchTodoById(todoId);
     alert(JSON.stringify(todo, null, 2));
   };
 
-  // CREATE TODO
   const createNew = async () => {
     const updated = await createTodo();
     setTodos(updated);
@@ -49,19 +53,16 @@ export default function TodosClient() {
     }
   };
 
-  // UPDATE TITLE
   const updateTitleClick = async () => {
     const updated = await updateTodoTitle(todoId, newTitle);
     setTodos(updated);
   };
 
-  // UPDATE DESCRIPTION
   const updateDescriptionClick = async () => {
     const updated = await updateTodoDescription(todoId, newDescription);
     setTodos(updated);
   };
 
-  // UPDATE COMPLETED
   const updateCompletedClick = async () => {
     const updated = await updateTodoCompleted(todoId, newCompleted);
     setTodos(updated);
@@ -72,7 +73,6 @@ export default function TodosClient() {
       <h2>Async CRUD with Todos</h2>
       <hr />
 
-      {/* LOAD TODOS */}
       <button className="btn btn-primary" onClick={loadTodos}>
         Load Todos
       </button>
@@ -87,7 +87,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* GET TODO BY ID */}
       <h3>Get Todo by ID</h3>
       <input
         value={todoId}
@@ -100,7 +99,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* CREATE TODO */}
       <h3>Create Todo</h3>
       <button className="btn btn-success" onClick={createNew}>
         Create New Todo
@@ -108,7 +106,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* DELETE TODO */}
       <h3>Delete Todo</h3>
       <button className="btn btn-danger" onClick={deleteOne}>
         Delete Todo
@@ -116,7 +113,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* UPDATE TITLE */}
       <h3>Update Todo Title</h3>
       <input
         placeholder="New Title"
@@ -130,7 +126,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* UPDATE DESCRIPTION */}
       <h3>Update Todo Description</h3>
       <input
         placeholder="New Description"
@@ -144,7 +139,6 @@ export default function TodosClient() {
 
       <hr />
 
-      {/* UPDATE COMPLETED */}
       <h3>Update Completed Status</h3>
       <label className="me-2">
         <input
