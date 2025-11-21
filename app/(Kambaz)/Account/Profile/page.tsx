@@ -35,18 +35,24 @@ export default function Profile() {
     setProfile({ ...currentUser }); // ⭐ Force strongly typed state
   };
 
-  const updateProfile = async () => {
-    if (!profile._id) return;
+ const updateProfile = async () => {
+  if (!profile._id) return;
 
-    const updatedProfile = await client.updateUser(profile._id, {
+  const allowedRoles: UserRole[] = ["USER", "FACULTY", "STUDENT"];
+  const safeRole = allowedRoles.includes(profile.role as UserRole)
+    ? (profile.role as UserRole)
+    : "USER"; // ⭐ fallback
+
+  const updatedProfile = await client.updateUser(profile._id, {
     ...profile,
+    role: safeRole,
     username: profile.username ?? "",
     password: profile.password ?? "",
   });
 
-    dispatch(setCurrentUser(updatedProfile));
-    alert("Profile updated successfully!");
-  };
+  dispatch(setCurrentUser(updatedProfile));
+  alert("Profile updated successfully!");
+};
 
   const signout = async () => {
     await client.signout();
