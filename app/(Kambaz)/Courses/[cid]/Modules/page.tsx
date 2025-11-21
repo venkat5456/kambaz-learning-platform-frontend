@@ -8,11 +8,7 @@ import ModulesControls from "./ModulesControls";
 import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { RootState } from "../../../store";
-import {
-  editModule,
-  updateModule as updateModuleState,
-  setModules,
-} from "./reducer";
+import { editModule, updateModule as updateModuleState, setModules } from "./reducer";
 import * as client from "../../client";
 import React, { useState, useEffect } from "react";
 
@@ -32,20 +28,21 @@ export interface Module {
 export default function ModulesPage() {
   const { cid } = useParams();
   const dispatch = useDispatch();
-
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
-
   const { modules } = useSelector((state: RootState) => state.modulesReducer);
   const [moduleName, setModuleName] = useState<string>("");
 
-  const toSafeModule = (m: any): Module => ({
-    _id: String(m._id ?? ""),
-    name: m.name ?? "",
-    course: typeof m.course === "string" ? m.course : (cid as string),
-    editing: m.editing ?? false,
-    lessons: m.lessons ?? [],
-  });
+  const toSafeModule = (m: unknown): Module => {
+    const mod = m as Partial<Module> & { lessons?: Lesson[]; course?: string | string[] };
+    return {
+      _id: String(mod._id ?? ""),
+      name: mod.name ?? "",
+      course: typeof mod.course === "string" ? mod.course : (cid as string),
+      editing: mod.editing ?? false,
+      lessons: mod.lessons ?? [],
+    };
+  };
 
   const fetchModules = async () => {
     if (!cid) return;
@@ -63,32 +60,29 @@ export default function ModulesPage() {
     fetchModules();
   }, [cid]);
 
-  const onCreateModuleForCourse = async (): Promise<void> => {
+  const onCreateModuleForCourse = async () => {
     if (!isFaculty) return alert("❌ Students cannot create modules!");
     if (!cid) return;
 
-    const created = await client.createModuleForCourse(cid as string, {
-      name: moduleName,
-    });
-
+    const created = await client.createModuleForCourse(cid as string, { name: moduleName });
     const safeModule = toSafeModule(created);
+
     dispatch(setModules([...modules, safeModule]));
     setModuleName("");
   };
 
-  const onUpdateModule = async (module: Partial<Module>): Promise<void> => {
+  const onUpdateModule = async (module: Partial<Module>) => {
     if (!isFaculty) return alert("❌ Students cannot update modules!");
     await client.updateModule(module);
+
     dispatch(
       setModules(
-        modules.map((m) =>
-          m._id === module._id ? { ...m, ...module } : m
-        )
+        modules.map((m) => (m._id === module._id ? { ...m, ...module } : m))
       )
     );
   };
 
-  const onRemoveModule = async (moduleId: string): Promise<void> => {
+  const onRemoveModule = async (moduleId: string) => {
     if (!isFaculty) return alert("❌ Students cannot delete modules!");
     await client.deleteModule(moduleId);
     dispatch(setModules(modules.filter((m) => m._id !== moduleId)));
@@ -97,13 +91,8 @@ export default function ModulesPage() {
   return (
     <div className="p-3 wd-modules">
       {isFaculty && (
-        <ModulesControls
-          moduleName={moduleName}
-          setModuleName={setModuleName}
-          addModule={onCreateModuleForCourse}
-        />
+        <ModulesControls moduleName={moduleName} setModuleName={setModuleName} addModule={onCreateModuleForCourse} />
       )}
-
       <br /><br />
 
       <ListGroup id="wd-modules" className="rounded-0">
@@ -149,7 +138,9 @@ export default function ModulesPage() {
                 ))}
               </ListGroup>
             ) : (
-              <p className="p-3 text-muted mb-0">No lessons found in this module.</p>
+              <p className="p-3 text-muted mb-0">
+                No lessons found in this module.
+              </p>
             )}
           </ListGroupItem>
         ))}
