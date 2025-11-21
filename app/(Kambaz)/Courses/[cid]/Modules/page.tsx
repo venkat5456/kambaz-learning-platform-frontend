@@ -44,13 +44,14 @@ export default function ModulesPage() {
 
   const fetchedModules = await client.findModulesForCourse(cid as string);
 
-  const safeModules: Module[] = fetchedModules.map((m: any) => ({
+  const safeModules = (fetchedModules as Module[]).map((m) => ({
     ...m,
-    _id: m._id ?? "", // Ensure _id is always a string
+    editing: m.editing ?? false,
   }));
 
   dispatch(setModules(safeModules));
 };
+
 
 
   useEffect(() => {
