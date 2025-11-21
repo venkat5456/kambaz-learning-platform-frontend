@@ -17,10 +17,11 @@ export default function Signup() {
   const dispatch = useDispatch();
 
   const signup = async () => {
-    const newUser = await client.signup({
-      loginId: credentials.username,
-      password: credentials.password,
-    });
+  const newUser = await client.signup({
+    username: credentials.username, // 🔹 FIXED: must be "username", not "loginId"
+    password: credentials.password,
+  });
+};
 
     if (!newUser) {
       alert("Signup failed");
