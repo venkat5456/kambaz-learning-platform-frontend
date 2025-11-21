@@ -39,9 +39,14 @@ export default function Home() {
   }
 
   const handleEnroll = async () => {
-    const result = await enrollUserInCourse(currentUser._id, cid as string);
-    setEnrollmentId(result._id);
-  };
+  if (!currentUser?._id || !cid) {
+    alert("Please sign in first!");
+    return;
+  }
+  const result = await enrollUserInCourse(currentUser._id, cid);
+  setEnrollmentId(result._id);
+};
+
 
   const handleUnenroll = async () => {
     if (!enrollmentId) return;
