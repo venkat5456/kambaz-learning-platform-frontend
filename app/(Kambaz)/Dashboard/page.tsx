@@ -48,7 +48,8 @@ export default function Dashboard() {
 
     if (!isFaculty && currentUser?._id) {
       const enrollments = await enrollClient.findEnrollments(currentUser._id);
-      setEnrolledCourseIds(enrollments.map((e) => e.course));
+     setEnrolledCourseIds(enrollments.map((e: Enrollment) => e.course));
+
     }
   };
 
