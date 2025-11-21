@@ -11,7 +11,7 @@ import { RootState } from "../../../store";
 import {
   editModule,
   updateModule as updateModuleState,
-  setModules
+  setModules,
 } from "./reducer";
 import * as client from "../../client";
 import React, { useState, useEffect } from "react";
@@ -32,7 +32,6 @@ interface Module {
 export default function ModulesPage() {
   const { cid } = useParams();
   const dispatch = useDispatch();
-
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
 
@@ -40,19 +39,18 @@ export default function ModulesPage() {
   const [moduleName, setModuleName] = useState<string>("");
 
   const fetchModules = async () => {
-  if (!cid) return;
+    if (!cid) return;
 
-  const fetchedModules = await client.findModulesForCourse(cid as string);
+    const rawModules = await client.findModulesForCourse(cid as string);
 
-  const safeModules = (fetchedModules as Module[]).map((m) => ({
-    ...m,
-    editing: m.editing ?? false,
-  }));
+    const safeModules: Module[] = (rawModules as Module[]).map((m) => ({
+      ...m,
+      _id: m._id ?? "",
+      editing: m.editing ?? false,
+    }));
 
-  dispatch(setModules(safeModules));
-};
-
-
+    dispatch(setModules(safeModules));
+  };
 
   useEffect(() => {
     fetchModules();
@@ -62,20 +60,29 @@ export default function ModulesPage() {
     if (!isFaculty) return alert("❌ Students cannot create modules!");
     if (!cid) return;
 
-    const newModule = await client.createModuleForCourse(cid as string, {
+    const created = await client.createModuleForCourse(cid as string, {
       name: moduleName,
     });
 
-    dispatch(setModules([...modules, newModule]));
+    const safeModule: Module = {
+      ...created,
+      _id: created._id ?? "",
+      editing: false,
+    };
+
+    dispatch(setModules([...modules, safeModule]));
     setModuleName("");
   };
 
   const onUpdateModule = async (module: Partial<Module>): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot update modules!");
     await client.updateModule(module);
+
     dispatch(
       setModules(
-        modules.map((m: Module) => (m._id === module._id ? { ...m, ...module } : m))
+        modules.map((m: Module) =>
+          m._id === module._id ? { ...m, ...module } : m
+        )
       )
     );
   };
@@ -83,6 +90,7 @@ export default function ModulesPage() {
   const onRemoveModule = async (moduleId: string): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot delete modules!");
     await client.deleteModule(moduleId);
+
     dispatch(setModules(modules.filter((m: Module) => m._id !== moduleId)));
   };
 
@@ -146,9 +154,7 @@ export default function ModulesPage() {
                 ))}
               </ListGroup>
             ) : (
-              <p className="p-3 text-muted mb-0">
-                No lessons found in this module.
-              </p>
+              <p className="p-3 text-muted mb-0">No lessons found in this module.</p>
             )}
           </ListGroupItem>
         ))}
