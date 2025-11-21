@@ -8,7 +8,11 @@ import ModulesControls from "./ModulesControls";
 import ModuleControlButtons from "./ModuleControlButtons";
 import LessonControlButtons from "./LessonControlButtons";
 import { RootState } from "../../../store";
-import { editModule, updateModule as updateModuleState, setModules } from "./reducer";
+import {
+  editModule,
+  updateModule as updateModuleState,
+  setModules,
+} from "./reducer";
 import * as client from "../../client";
 import React, { useState, useEffect } from "react";
 
@@ -73,11 +77,16 @@ export default function ModulesPage() {
 
   const onUpdateModule = async (module: Partial<Module>) => {
     if (!isFaculty) return alert("❌ Students cannot update modules!");
-    await client.updateModule(module);
+
+    const updatedPayload: Module = toSafeModule(module);
+
+    await client.updateModule(updatedPayload);
 
     dispatch(
       setModules(
-        modules.map((m) => (m._id === module._id ? { ...m, ...module } : m))
+        modules.map((m) =>
+          m._id === module._id ? { ...m, ...updatedPayload } : m
+        )
       )
     );
   };
@@ -91,7 +100,11 @@ export default function ModulesPage() {
   return (
     <div className="p-3 wd-modules">
       {isFaculty && (
-        <ModulesControls moduleName={moduleName} setModuleName={setModuleName} addModule={onCreateModuleForCourse} />
+        <ModulesControls
+          moduleName={moduleName}
+          setModuleName={setModuleName}
+          addModule={onCreateModuleForCourse}
+        />
       )}
       <br /><br />
 
@@ -112,7 +125,15 @@ export default function ModulesPage() {
                       dispatch(updateModuleState({ ...module, name: e.target.value }))
                     }
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") onUpdateModule({ ...module, editing: false });
+                      if (e.key === "Enter")
+                        onUpdateModule({
+                          ...module,
+                          editing: false,
+                          course:
+                            typeof module.course === "string"
+                              ? module.course
+                              : (cid as string),
+                        });
                     }}
                   />
                 )}
@@ -138,9 +159,7 @@ export default function ModulesPage() {
                 ))}
               </ListGroup>
             ) : (
-              <p className="p-3 text-muted mb-0">
-                No lessons found in this module.
-              </p>
+              <p className="p-3 text-muted mb-0">No lessons found in this module.</p>
             )}
           </ListGroupItem>
         ))}
