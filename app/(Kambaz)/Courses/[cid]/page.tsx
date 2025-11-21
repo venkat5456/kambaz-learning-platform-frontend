@@ -12,9 +12,6 @@ import {
   unenrollUserFromCourse,
 } from "../../Enrollments/client";
 
-
-
-
 export default function CoursesPage() {
   const { cid } = useParams(); // course ID
   const { currentUser } = useSelector(
@@ -25,8 +22,9 @@ export default function CoursesPage() {
   const isStudent = currentUser?.role === "STUDENT";
 
   const loadEnrollment = async () => {
-    if (!currentUser) return;
-    const enrollments = await findEnrollments(currentUser._id, cid as string);
+    if (!currentUser?._id || typeof cid !== "string") return;
+
+    const enrollments = await findEnrollments(currentUser._id, cid);
 
     if (enrollments.length > 0) {
       setEnrollmentId(enrollments[0]._id);
@@ -48,7 +46,12 @@ export default function CoursesPage() {
   }
 
   const handleEnroll = async () => {
-    const result = await enrollUserInCourse(currentUser._id, cid as string);
+    if (!currentUser?._id || typeof cid !== "string") {
+      alert("Enrollment failed: missing user or course ID");
+      return;
+    }
+
+    const result = await enrollUserInCourse(currentUser._id, cid);
     setEnrollmentId(result._id);
   };
 
@@ -76,7 +79,6 @@ export default function CoursesPage() {
     );
   }
 
-  // ⭐ When enrolled → render the course content
   return (
     <div className="p-4">
       {isStudent && (
@@ -87,7 +89,6 @@ export default function CoursesPage() {
           Unenroll
         </button>
       )}
-
       <Home />
     </div>
   );
