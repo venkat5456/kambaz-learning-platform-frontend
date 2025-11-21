@@ -47,6 +47,8 @@ export default function ModulesPage() {
       ...m,
       _id: m._id ?? "",
       editing: m.editing ?? false,
+      course: typeof m.course === "string" ? m.course : cid,
+      lessons: m.lessons ?? [],
     }));
 
     dispatch(setModules(safeModules));
@@ -65,9 +67,11 @@ export default function ModulesPage() {
     });
 
     const safeModule: Module = {
-      ...created,
       _id: created._id ?? "",
+      name: created.name ?? moduleName,
+      course: typeof cid === "string" ? cid : "",
       editing: false,
+      lessons: created.lessons ?? [],
     };
 
     dispatch(setModules([...modules, safeModule]));
