@@ -17,11 +17,10 @@ export default function Signup() {
   const dispatch = useDispatch();
 
   const signup = async () => {
-  const newUser = await client.signup({
-    username: credentials.username, // 🔹 FIXED: must be "username", not "loginId"
-    password: credentials.password,
-  });
-};
+    const newUser = await client.signup({
+      username: credentials.username, // correct key
+      password: credentials.password,
+    });
 
     if (!newUser) {
       alert("Signup failed");
@@ -38,7 +37,7 @@ export default function Signup() {
 
       <FormControl
         id="wd-username"
-        placeholder="username"
+        placeholder="Username"
         className="mb-2"
         value={credentials.username}
         onChange={(e) =>
@@ -49,7 +48,7 @@ export default function Signup() {
       <FormControl
         id="wd-password"
         type="password"
-        placeholder="password"
+        placeholder="Password"
         className="mb-2"
         value={credentials.password}
         onChange={(e) =>
