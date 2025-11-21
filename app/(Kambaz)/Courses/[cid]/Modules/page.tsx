@@ -21,10 +21,10 @@ interface Lesson {
   name: string;
 }
 
-interface Module {
+export interface Module {
   _id: string;
   name: string;
-  course: string | string[] | undefined;
+  course: string;
   editing?: boolean;
   lessons?: Lesson[];
 }
@@ -32,24 +32,29 @@ interface Module {
 export default function ModulesPage() {
   const { cid } = useParams();
   const dispatch = useDispatch();
+
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
 
   const { modules } = useSelector((state: RootState) => state.modulesReducer);
   const [moduleName, setModuleName] = useState<string>("");
 
+  const toSafeModule = (m: any): Module => ({
+    _id: String(m._id ?? ""),
+    name: m.name ?? "",
+    course: typeof m.course === "string" ? m.course : (cid as string),
+    editing: m.editing ?? false,
+    lessons: m.lessons ?? [],
+  });
+
   const fetchModules = async () => {
     if (!cid) return;
 
-    const rawModules = await client.findModulesForCourse(cid as string);
+    const result = await client.findModulesForCourse(cid as string);
 
-    const safeModules: Module[] = (rawModules as Module[]).map((m) => ({
-      ...m,
-      _id: m._id ?? "",
-      editing: m.editing ?? false,
-      course: typeof m.course === "string" ? m.course : cid,
-      lessons: m.lessons ?? [],
-    }));
+    const safeModules: Module[] = Array.isArray(result)
+      ? result.map(toSafeModule)
+      : [toSafeModule(result)];
 
     dispatch(setModules(safeModules));
   };
@@ -66,14 +71,7 @@ export default function ModulesPage() {
       name: moduleName,
     });
 
-    const safeModule: Module = {
-      _id: created._id ?? "",
-      name: created.name ?? moduleName,
-      course: typeof cid === "string" ? cid : "",
-      editing: false,
-      lessons: created.lessons ?? [],
-    };
-
+    const safeModule = toSafeModule(created);
     dispatch(setModules([...modules, safeModule]));
     setModuleName("");
   };
@@ -81,10 +79,9 @@ export default function ModulesPage() {
   const onUpdateModule = async (module: Partial<Module>): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot update modules!");
     await client.updateModule(module);
-
     dispatch(
       setModules(
-        modules.map((m: Module) =>
+        modules.map((m) =>
           m._id === module._id ? { ...m, ...module } : m
         )
       )
@@ -94,8 +91,7 @@ export default function ModulesPage() {
   const onRemoveModule = async (moduleId: string): Promise<void> => {
     if (!isFaculty) return alert("❌ Students cannot delete modules!");
     await client.deleteModule(moduleId);
-
-    dispatch(setModules(modules.filter((m: Module) => m._id !== moduleId)));
+    dispatch(setModules(modules.filter((m) => m._id !== moduleId)));
   };
 
   return (
@@ -111,11 +107,8 @@ export default function ModulesPage() {
       <br /><br />
 
       <ListGroup id="wd-modules" className="rounded-0">
-        {modules.map((module: Module) => (
-          <ListGroupItem
-            key={module._id}
-            className="wd-module p-0 mb-5 fs-5 border-gray"
-          >
+        {modules.map((module) => (
+          <ListGroupItem key={module._id} className="wd-module p-0 mb-5 fs-5 border-gray">
             <div className="wd-title p-3 ps-2 bg-secondary d-flex justify-content-between align-items-center text-white">
               <div className="d-flex align-items-center w-100">
                 <BsGripVertical className="me-2 fs-3" />
@@ -130,9 +123,7 @@ export default function ModulesPage() {
                       dispatch(updateModuleState({ ...module, name: e.target.value }))
                     }
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        onUpdateModule({ ...module, editing: false });
-                      }
+                      if (e.key === "Enter") onUpdateModule({ ...module, editing: false });
                     }}
                   />
                 )}
@@ -149,7 +140,7 @@ export default function ModulesPage() {
 
             {module.lessons?.length ? (
               <ListGroup className="wd-lessons rounded-0">
-                {module.lessons.map((lesson: Lesson, i: number) => (
+                {module.lessons.map((lesson, i) => (
                   <ListGroupItem key={i} className="wd-lesson p-3 ps-1">
                     <BsGripVertical className="me-2 fs-3" />
                     {lesson.name}
