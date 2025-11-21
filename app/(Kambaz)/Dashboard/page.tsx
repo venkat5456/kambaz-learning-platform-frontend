@@ -9,7 +9,6 @@ import { setCourses } from "../Courses/reducer";
 import { RootState } from "../store";
 import * as coursesClient from "../Courses/client";
 import * as enrollClient from "../Enrollments/client";
-import type { Course } from "../Courses/client";
 
 interface Enrollment {
   _id: string;
@@ -17,29 +16,36 @@ interface Enrollment {
   course: string;
 }
 
+// Local Course interface to avoid TS type conflicts
+interface Course {
+  _id: string;
+  name: string;
+  description: string;
+  image: string;
+}
+
+// Standardize Course data format
+const toSafeCourse = (c: any): Course => ({
+  _id: c._id ?? "",
+  name: c.name ?? "",
+  description: c.description ?? "",
+  image: c.image ?? "/images/reactjs.jpg",
+});
+
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
 
   const [enrolledCourseIds, setEnrolledCourseIds] = useState<string[]>([]);
-
-  const [course, setCourse] = useState<Course>({
-    _id: "",
-    name: "",
-    description: "",
-    image: "/images/reactjs.jpg",
-  });
-
   const isFaculty = currentUser?.role === "FACULTY";
 
   const loadDashboardData = async () => {
-    const allCourses: Course[] = await coursesClient.fetchAllCourses();
-    dispatch(setCourses(allCourses));
+    const fetched = await coursesClient.fetchAllCourses();
+    dispatch(setCourses(fetched.map(toSafeCourse)));
 
     if (!isFaculty && currentUser?._id) {
-      const enrollments: Enrollment[] =
-        await enrollClient.findEnrollments(currentUser._id);
+      const enrollments = await enrollClient.findEnrollments(currentUser._id);
       setEnrolledCourseIds(enrollments.map((e) => e.course));
     }
   };
@@ -48,8 +54,15 @@ export default function Dashboard() {
     if (currentUser) loadDashboardData();
   }, [currentUser]);
 
+  const [course, setCourse] = useState<Course>({
+    _id: "",
+    name: "",
+    description: "",
+    image: "/images/reactjs.jpg",
+  });
+
   const enroll = async (courseId: string) => {
-    if (!currentUser) return alert("Sign in first!");
+    if (!currentUser?._id) return alert("Sign in first!");
     await enrollClient.enrollUserInCourse(currentUser._id, courseId);
     loadDashboardData();
   };
@@ -57,31 +70,30 @@ export default function Dashboard() {
   const createNewCourse = async () => {
     if (!isFaculty) return;
     const updatedList = await coursesClient.createCourse(course);
-    dispatch(setCourses(updatedList));
+    dispatch(setCourses(updatedList.map(toSafeCourse)));
     setCourse({ _id: "", name: "", description: "", image: "/images/reactjs.jpg" });
   };
 
   const updateSelectedCourse = async () => {
     if (!isFaculty || !course._id) return;
     const updatedList = await coursesClient.updateCourse(course);
-    dispatch(setCourses(updatedList));
+    dispatch(setCourses(updatedList.map(toSafeCourse)));
   };
 
   const deleteCourseById = async (courseId: string) => {
     if (!isFaculty) return;
     const updatedList = await coursesClient.deleteCourse(courseId);
-    dispatch(setCourses(updatedList));
+    dispatch(setCourses(updatedList.map(toSafeCourse)));
   };
 
-  const myCourses = courses.filter((c: Course) => enrolledCourseIds.includes(c._id!));
-  const availableCourses = courses.filter((c: Course) => !enrolledCourseIds.includes(c._id!));
+  const myCourses = courses.filter((c) => enrolledCourseIds.includes(c._id));
+  const availableCourses = courses.filter((c) => !enrolledCourseIds.includes(c._id));
 
   return (
     <div id="wd-dashboard" className="p-3">
       <h1>Dashboard</h1>
       <hr />
 
-      {/* Faculty controls */}
       {isFaculty && (
         <>
           <h4>Manage Courses</h4>
@@ -89,7 +101,9 @@ export default function Dashboard() {
             className="mb-2"
             placeholder="Course Name"
             value={course.name}
-            onChange={(e) => setCourse({ ...course, name: e.target.value })}
+            onChange={(e) =>
+              setCourse({ ...course, name: e.target.value })
+            }
           />
           <FormControl
             className="mb-2"
@@ -99,7 +113,6 @@ export default function Dashboard() {
               setCourse({ ...course, description: e.target.value })
             }
           />
-
           <Button className="btn btn-primary me-2" onClick={createNewCourse}>
             Add Course
           </Button>
@@ -110,32 +123,29 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Student View */}
       {!isFaculty && (
         <>
           <h2>My Courses ({myCourses.length})</h2>
-          {myCourses.length === 0 ? (
-            <p>You are not enrolled yet.</p>
-          ) : (
-            <Row className="g-4 mt-3">
-              {myCourses.map((c) => (
-                <Col key={c._id}>
-                  <Card>
-                    <Link href={`/Courses/${c._id}/Home`} className="text-decoration-none text-dark">
-                      <CardImg src={c.image} height={160} />
-                      <CardBody>
-                        <CardTitle>{c.name}</CardTitle>
-                        <Button variant="primary">Go</Button>
-                      </CardBody>
-                    </Link>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          )}
+          <Row className="g-4 mt-3">
+            {myCourses.map((c) => (
+              <Col key={c._id}>
+                <Card>
+                  <Link
+                    href={`/Courses/${c._id}/Home`}
+                    className="text-decoration-none text-dark"
+                  >
+                    <CardImg src={c.image} height={160} />
+                    <CardBody>
+                      <CardTitle>{c.name}</CardTitle>
+                      <Button variant="primary">Go</Button>
+                    </CardBody>
+                  </Link>
+                </Card>
+              </Col>
+            ))}
+          </Row>
 
           <hr />
-
           <h2>Available Courses ({availableCourses.length})</h2>
           <Row className="g-4 mt-3">
             {availableCourses.map((c) => (
@@ -144,7 +154,10 @@ export default function Dashboard() {
                   <CardImg src={c.image} height={160} />
                   <CardBody>
                     <CardTitle>{c.name}</CardTitle>
-                    <Button variant="success" onClick={() => enroll(c._id!)}>
+                    <Button
+                      variant="success"
+                      onClick={() => enroll(c._id)}
+                    >
                       Enroll
                     </Button>
                   </CardBody>
@@ -155,15 +168,17 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Faculty View */}
       {isFaculty && (
         <>
           <h2>All Courses ({courses.length})</h2>
           <Row className="g-4 mt-3">
-            {courses.map((c: Course) => (
+            {courses.map((c) => (
               <Col key={c._id}>
                 <Card>
-                  <Link href={`/Courses/${c._id}/Home`} className="text-decoration-none text-dark">
+                  <Link
+                    href={`/Courses/${c._id}/Home`}
+                    className="text-decoration-none text-dark"
+                  >
                     <CardImg src={c.image} height={160} />
                     <CardBody>
                       <CardTitle>{c.name}</CardTitle>
@@ -171,7 +186,7 @@ export default function Dashboard() {
                         className="btn btn-danger mt-2"
                         onClick={(e) => {
                           e.preventDefault();
-                          deleteCourseById(c._id!);
+                          deleteCourseById(c._id);
                         }}
                       >
                         Delete
