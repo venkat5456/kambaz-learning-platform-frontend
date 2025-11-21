@@ -40,10 +40,18 @@ export default function ModulesPage() {
   const [moduleName, setModuleName] = useState<string>("");
 
   const fetchModules = async () => {
-    if (!cid) return;
-    const fetchedModules = await client.findModulesForCourse(cid as string);
-    dispatch(setModules(fetchedModules));
-  };
+  if (!cid) return;
+
+  const fetchedModules = await client.findModulesForCourse(cid as string);
+
+  const safeModules: Module[] = fetchedModules.map((m: any) => ({
+    ...m,
+    _id: m._id ?? "", // Ensure _id is always a string
+  }));
+
+  dispatch(setModules(safeModules));
+};
+
 
   useEffect(() => {
     fetchModules();
