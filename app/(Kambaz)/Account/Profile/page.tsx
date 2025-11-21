@@ -38,10 +38,11 @@ export default function Profile() {
   const updateProfile = async () => {
     if (!profile._id) return;
 
-    const updatedProfile = await client.updateUser(
-      profile._id,
-      profile as Record<string, unknown> // ⭐ Fix TS type requirement
-    );
+    const updatedProfile = await client.updateUser(profile._id, {
+    ...profile,
+    username: profile.username ?? "",
+    password: profile.password ?? "",
+  });
 
     dispatch(setCurrentUser(updatedProfile));
     alert("Profile updated successfully!");
