@@ -6,9 +6,10 @@ import { FaPencil, FaCheck } from "react-icons/fa6";
 import { IoCloseSharp } from "react-icons/io5";
 import { FormControl } from "react-bootstrap";
 import * as client from "../../../Account/client";
+import type { User } from "../../../Account/client";   // ⭐ ADDED (only change #1)
 
 export default function PeopleDetails({ uid, onClose }) {
-  const [user, setUser] = useState<any>({});
+  const [user, setUser] = useState<User>({} as User);  // ⭐ CHANGED any → User (only change #2)
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
 
@@ -100,7 +101,7 @@ export default function PeopleDetails({ uid, onClose }) {
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                saveUser();   // ⭐ ENTER NOW WORKS
+                saveUser(); // ⭐ ENTER NOW WORKS
               }
             }}
           />

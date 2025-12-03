@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import PeopleTable from "./Table";
 import * as coursesClient from "../../../Courses/client";
 import { useParams } from "next/navigation";
+import type { User } from "../../../Account/client";  // ⭐ added
 
 export default function PeoplePage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);      // ⭐ any[] → User[]
   const { cid } = useParams(); // course ID from URL
 
   const fetchUsers = async () => {

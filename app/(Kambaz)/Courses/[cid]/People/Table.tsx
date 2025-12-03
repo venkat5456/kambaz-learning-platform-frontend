@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import PeopleDetails from "./Details";
+import type { User } from "../../../Account/client";   // ✔ correct path & type
 
 export default function PeopleTable({
   users = [],
   fetchUsers,
 }: {
-  users?: any[];
+  users?: User[];            // ✔ replace any[] → User[]
   fetchUsers: () => void;
 }) {
   const [showDetails, setShowDetails] = useState(false);
@@ -16,7 +17,6 @@ export default function PeopleTable({
 
   return (
     <div id="wd-people-table" className="p-3">
-
       {showDetails && (
         <PeopleDetails
           uid={uid}
@@ -38,13 +38,13 @@ export default function PeopleTable({
         </thead>
 
         <tbody>
-          {users.map((user: any) => (
+          {users.map((user: User) => (        // ✔ replace any → User
             <tr key={user._id}>
               <td
                 className="text-danger fw-bold"
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  setUid(user._id);
+                  setUid(user._id ?? null);   // ✔ safe for string | null
                   setShowDetails(true);
                 }}
               >
@@ -52,10 +52,10 @@ export default function PeopleTable({
                 {user.firstName} {user.lastName}
               </td>
 
-              {/* Login ID = username */}
-              <td>{user.username || "—"}</td>
+              {/* Login ID */}
+              <td>{user.username ?? "—"}</td>
 
-              {/* No section in MongoDB */}
+              {/* No section info available */}
               <td>—</td>
             </tr>
           ))}

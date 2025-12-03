@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import * as client from "../client";
 import UsersTable from "../Components/UsersTable";
 import { FaPlus } from "react-icons/fa";
+import type { User } from "../client"; // ⭐ added this line
 
 export default function Users() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]); // ⭐ changed any[] → User[]
   const [role, setRole] = useState("");
   const [name, setName] = useState("");
 
