@@ -11,6 +11,8 @@ export interface User {
   email?: string;
   dob?: string;
   role?: "STUDENT" | "FACULTY" | "USER" | "ADMIN";
+  section?: string;        
+  totalActivity?: number; 
   [key: string]: unknown;
 }
 
