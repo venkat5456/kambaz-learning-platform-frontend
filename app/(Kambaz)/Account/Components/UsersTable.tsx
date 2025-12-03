@@ -1,8 +1,8 @@
 "use client";
 
-import type { User } from "../client";  // ← only added this
+import type { User } from "../client";
 
-export default function UsersTable({ users = [] }) {
+export default function UsersTable({ users = [] }: { users: User[] }) {
   return (
     <div id="wd-users-table">
       <table className="table table-striped">
@@ -16,7 +16,7 @@ export default function UsersTable({ users = [] }) {
         </thead>
 
         <tbody>
-          {users.map((user: User) => (   // ← changed ONLY this line
+          {users.map((user: User) => (
             <tr key={user._id}>
               <td>{user._id}</td>
               <td>{user.firstName} {user.lastName}</td>
