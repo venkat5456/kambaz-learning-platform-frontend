@@ -2,13 +2,13 @@
 
 import axios from "axios";
 
-// ---------- Type Definitions ----------
 export interface Course {
-  _id?: string;
+  _id: string;               // MAKE THIS REQUIRED (important)
   name: string;
   description?: string;
   image?: string;
 }
+
 
 export interface Module {
   _id?: string;
