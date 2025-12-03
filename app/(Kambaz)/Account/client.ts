@@ -68,13 +68,14 @@ export const profile = async () => {
   return response.data;
 };
 
-export const updateUser = async (user: User) => {
+export const updateUser = async (userId: string, updates: User) => {
   const response = await axiosWithCredentials.put(
-    `${USERS_API}/${user._id}`,
-    user
+    `${USERS_API}/${userId}`,
+    updates
   );
   return response.data;
 };
+
 
 export const deleteUser = async (userId: string) => {
   const response = await axiosWithCredentials.delete(`${USERS_API}/${userId}`);
