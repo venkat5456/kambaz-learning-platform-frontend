@@ -4,13 +4,18 @@ import { v4 as uuidv4 } from "uuid";
 
 
 export interface Course {
-  _id: string;
+  _id: string;            // required and safe
   name: string;
+
   number?: string;
   term?: string;
   startDate?: string;
   endDate?: string;
   credits?: number;
+
+  // ➕ add these two so server data matches reducer
+  description?: string;
+  image?: string;
 }
 
 
