@@ -56,8 +56,11 @@ export default function CoursesPage() {
   };
 
   const handleUnenroll = async () => {
-    if (!enrollmentId) return;
-    await unenrollUserFromCourse(enrollmentId);
+    if (!enrollmentId || !currentUser?._id || typeof cid !== "string") return;
+
+    // ⭐ FIXED — MUST pass (uid, cid)
+    await unenrollUserFromCourse(currentUser._id, cid as string);
+
     setEnrollmentId(null);
   };
 
