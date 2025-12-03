@@ -7,29 +7,37 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 
 export default function AccountNavigation() {
-  // ✅ Get the current user from Redux store
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-
-  // ✅ If user is signed in → show Profile
-  // ✅ If not signed in → show Signin & Signup
-  const links = currentUser ? ["Profile"] : ["Signin", "Signup"];
-
   const pathname = usePathname();
 
   return (
     <Nav variant="pills" className="flex-column" id="wd-account-navigation">
-      {links.map((link) => (
-        <NavItem key={link}>
-          <NavLink
-            as={Link}
-            href={`/Account/${link}`}
-            active={pathname.endsWith(link.toLowerCase())}
-            className="text-dark border-0"
-          >
-            {link}
-          </NavLink>
-        </NavItem>
-      ))}
+
+      {!currentUser && (
+        <>
+          <NavItem>
+            <NavLink as={Link} href="/Account/Signin">Signin</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink as={Link} href="/Account/Signup">Signup</NavLink>
+          </NavItem>
+        </>
+      )}
+
+      {currentUser && (
+        <>
+          <NavItem>
+            <NavLink as={Link} href="/Account/Profile">Profile</NavLink>
+          </NavItem>
+
+          {currentUser.role === "ADMIN" && (
+            <NavItem>
+              <NavLink as={Link} href="/Account/Users">Users</NavLink>
+            </NavItem>
+          )}
+        </>
+      )}
+
     </Nav>
   );
 }

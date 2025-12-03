@@ -2,20 +2,31 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Row, Col, Card, CardImg, CardBody, CardTitle, Button, FormControl,
+  Row,
+  Col,
+  Card,
+  CardImg,
+  CardBody,
+  CardTitle,
+  Button,
+  FormControl,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setCourses } from "../Courses/reducer";
 import { RootState } from "../store";
+
 import * as coursesClient from "../Courses/client";
-import * as enrollClient from "../Enrollments/client";
 
-interface Enrollment {
-  _id: string;
-  user: string;
-  course: string;
-}
+// ⭐ NEW — REMOVE OLD ENROLL CLIENT
+// import * as enrollClient from "../Enrollments/client";
 
+// ⭐ NEW — USE THESE INSTEAD
+import {
+  enrollIntoCourse,
+  unenrollFromCourse,
+} from "../Courses/client";
+
+// ---------------- TYPES ----------------
 interface Course {
   _id: string;
   name: string;
@@ -23,7 +34,7 @@ interface Course {
   image: string;
 }
 
-// 🟢 Fix: no `any` — use `unknown` and type narrow
+// Safe transformer
 const toSafeCourse = (c: unknown): Course => {
   const course = c as Partial<Course>;
   return {
@@ -36,20 +47,26 @@ const toSafeCourse = (c: unknown): Course => {
 
 export default function Dashboard() {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
-  const { courses } = useSelector((state: RootState) => state.coursesReducer);
+  const { currentUser } = useSelector(
+    (state: RootState) => state.accountReducer
+  );
+  const { courses } = useSelector(
+    (state: RootState) => state.coursesReducer
+  );
 
   const [enrolledCourseIds, setEnrolledCourseIds] = useState<string[]>([]);
   const isFaculty = currentUser?.role === "FACULTY";
 
+  // ---------------- LOAD DASHBOARD ----------------
   const loadDashboardData = async () => {
+    // Load all courses
     const fetched = await coursesClient.fetchAllCourses();
     dispatch(setCourses(fetched.map(toSafeCourse)));
 
+    // Students → load *their* courses from MongoDB
     if (!isFaculty && currentUser?._id) {
-      const enrollments = await enrollClient.findEnrollments(currentUser._id);
-     setEnrolledCourseIds(enrollments.map((e: Enrollment) => e.course));
-
+      const myCourses = await coursesClient.findMyCourses();
+      setEnrolledCourseIds(myCourses.map((c: Course) => c._id));
     }
   };
 
@@ -57,6 +74,7 @@ export default function Dashboard() {
     if (currentUser) loadDashboardData();
   }, [currentUser]);
 
+  // ---------------- STATE FOR FORM ----------------
   const [course, setCourse] = useState<Course>({
     _id: "",
     name: "",
@@ -64,39 +82,48 @@ export default function Dashboard() {
     image: "/images/reactjs.jpg",
   });
 
+  // ---------------- ENROLL ----------------
   const enroll = async (courseId: string) => {
     if (!currentUser?._id) return alert("Sign in first!");
-    await enrollClient.enrollUserInCourse(currentUser._id, courseId);
-    loadDashboardData();
+    await enrollIntoCourse(currentUser._id, courseId);
+    await loadDashboardData();
   };
 
+  // ---------------- FACULTY: CREATE ----------------
   const createNewCourse = async () => {
     if (!isFaculty) return;
-    const updatedList = await coursesClient.createCourse(course);
-    dispatch(setCourses(updatedList.map(toSafeCourse)));
+    const newCourse = await coursesClient.createCourse(course);
+    await loadDashboardData();
     setCourse({ _id: "", name: "", description: "", image: "/images/reactjs.jpg" });
   };
 
+  // ---------------- FACULTY: UPDATE ----------------
   const updateSelectedCourse = async () => {
     if (!isFaculty || !course._id) return;
-    const updatedList = await coursesClient.updateCourse(course);
-    dispatch(setCourses(updatedList.map(toSafeCourse)));
+    await coursesClient.updateCourse(course);
+    await loadDashboardData();
   };
 
+  // ---------------- FACULTY: DELETE ----------------
   const deleteCourseById = async (courseId: string) => {
     if (!isFaculty) return;
-    const updatedList = await coursesClient.deleteCourse(courseId);
-    dispatch(setCourses(updatedList.map(toSafeCourse)));
+    await coursesClient.deleteCourse(courseId);
+    await loadDashboardData();
   };
 
+  // ---------------- FILTER ----------------
   const myCourses = courses.filter((c) => enrolledCourseIds.includes(c._id));
-  const availableCourses = courses.filter((c) => !enrolledCourseIds.includes(c._id));
+  const availableCourses = courses.filter(
+    (c) => !enrolledCourseIds.includes(c._id)
+  );
 
+  // ---------------- UI ----------------
   return (
     <div id="wd-dashboard" className="p-3">
       <h1>Dashboard</h1>
       <hr />
 
+      {/* FACULTY SECTION */}
       {isFaculty && (
         <>
           <h4>Manage Courses</h4>
@@ -104,17 +131,13 @@ export default function Dashboard() {
             className="mb-2"
             placeholder="Course Name"
             value={course.name}
-            onChange={(e) =>
-              setCourse({ ...course, name: e.target.value })
-            }
+            onChange={(e) => setCourse({ ...course, name: e.target.value })}
           />
           <FormControl
             className="mb-2"
             placeholder="Course Description"
             value={course.description ?? ""}
-            onChange={(e) =>
-              setCourse({ ...course, description: e.target.value })
-            }
+            onChange={(e) => setCourse({ ...course, description: e.target.value })}
           />
           <Button className="btn btn-primary me-2" onClick={createNewCourse}>
             Add Course
@@ -126,6 +149,7 @@ export default function Dashboard() {
         </>
       )}
 
+      {/* STUDENT SECTION */}
       {!isFaculty && (
         <>
           <h2>My Courses ({myCourses.length})</h2>
@@ -157,10 +181,7 @@ export default function Dashboard() {
                   <CardImg src="/images/reactjs.jpg" height={160} />
                   <CardBody>
                     <CardTitle>{c.name}</CardTitle>
-                    <Button
-                      variant="success"
-                      onClick={() => enroll(c._id)}
-                    >
+                    <Button variant="success" onClick={() => enroll(c._id)}>
                       Enroll
                     </Button>
                   </CardBody>
@@ -171,6 +192,7 @@ export default function Dashboard() {
         </>
       )}
 
+      {/* FACULTY: VIEW ALL */}
       {isFaculty && (
         <>
           <h2>All Courses ({courses.length})</h2>
@@ -185,6 +207,7 @@ export default function Dashboard() {
                     <CardImg src="/images/reactjs.jpg" height={160} />
                     <CardBody>
                       <CardTitle>{c.name}</CardTitle>
+
                       <Button
                         className="btn btn-danger mt-2"
                         onClick={(e) => {

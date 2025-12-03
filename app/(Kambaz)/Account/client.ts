@@ -2,7 +2,6 @@
 
 import axios from "axios";
 
-// User Type Definition
 export interface User {
   _id?: string;
   username: string;
@@ -11,17 +10,18 @@ export interface User {
   lastName?: string;
   email?: string;
   dob?: string;
-  role?: "STUDENT" | "FACULTY" | "USER";
-  [key: string]: unknown; // ⭐ Allow dynamic key/value pairs
+  role?: "STUDENT" | "FACULTY" | "USER" | "ADMIN";
+  [key: string]: unknown;
 }
 
 const axiosWithCredentials = axios.create({ withCredentials: true });
 
-export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
+export const HTTP_SERVER =
+  process.env.NEXT_PUBLIC_HTTP_SERVER || "http://localhost:4000";
+
 export const USERS_API = `${HTTP_SERVER}/api/users`;
 
-// SIGNUP
-export const signup = async (credentials: User): Promise<User> => {
+export const signup = async (credentials: User) => {
   const response = await axiosWithCredentials.post(
     `${USERS_API}/signup`,
     credentials
@@ -29,10 +29,29 @@ export const signup = async (credentials: User): Promise<User> => {
   return response.data;
 };
 
-// SIGNIN
+export const findAllUsers = async () => {
+  const response = await axiosWithCredentials.get(USERS_API);
+  return response.data;
+};
+
+export const findUsersByRole = async (role: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?role=${role}`);
+  return response.data;
+};
+
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?name=${name}`);
+  return response.data;
+};
+
+export const findUserById = async (id: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}/${id}`);
+  return response.data;
+};
+
 export const signin = async (
   credentials: Pick<User, "username" | "password">
-): Promise<User> => {
+) => {
   const response = await axiosWithCredentials.post(
     `${USERS_API}/signin`,
     credentials
@@ -40,25 +59,30 @@ export const signin = async (
   return response.data;
 };
 
-// SIGNOUT
-export const signout = async (): Promise<void> => {
+export const signout = async () => {
   await axiosWithCredentials.post(`${USERS_API}/signout`);
 };
 
-// PROFILE
-export const profile = async (): Promise<User> => {
+export const profile = async () => {
   const response = await axiosWithCredentials.get(`${USERS_API}/profile`);
   return response.data;
 };
 
-// UPDATE USER (⭐ fully typed and Vercel-safe)
-export const updateUser = async (
-  userId: string,
-  user: User
-): Promise<User> => {
+export const updateUser = async (user: User) => {
   const response = await axiosWithCredentials.put(
-    `${USERS_API}/${userId}`,
+    `${USERS_API}/${user._id}`,
     user
   );
   return response.data;
 };
+
+export const deleteUser = async (userId: string) => {
+  const response = await axiosWithCredentials.delete(`${USERS_API}/${userId}`);
+  return response.data;
+};
+
+export const createUser = async (user: any) => {
+  const response = await axiosWithCredentials.post(`${USERS_API}`, user);
+  return response.data;
+};
+

@@ -92,6 +92,22 @@ export const createModuleForCourse = async (
   return data;
 };
 
+// Enroll user into a course
+export const enrollIntoCourse = async (userId: string, courseId: string) => {
+  const { data } = await axiosWithCredentials.post(
+    `${USERS_API}/${userId}/courses/${courseId}`
+  );
+  return data;
+};
+
+// Unenroll user from a course
+export const unenrollFromCourse = async (userId: string, courseId: string) => {
+  const { data } = await axiosWithCredentials.delete(
+    `${USERS_API}/${userId}/courses/${courseId}`
+  );
+  return data;
+};
+
 // Update module
 export const updateModule = async (module: Module): Promise<Module[]> => {
   if (!module._id) throw new Error("Module _id is required for update");
@@ -105,5 +121,13 @@ export const updateModule = async (module: Module): Promise<Module[]> => {
 // Delete module
 export const deleteModule = async (moduleId: string): Promise<Module[]> => {
   const { data } = await axiosWithCredentials.delete(`${MODULES_API}/${moduleId}`);
+  return data;
+};
+
+// -----------------------------------
+// ⭐️ 6.4.3.5 — GET USERS ENROLLED IN A COURSE
+// -----------------------------------
+export const findUsersForCourse = async (courseId: string) => {
+  const { data } = await axios.get(`${COURSES_API}/${courseId}/users`);
   return data;
 };

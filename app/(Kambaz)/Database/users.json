@@ -118,5 +118,16 @@
     "role": "Faculty",
     "lastActivity": "30 minutes ago",
     "totalActivity": "16 hrs"
+  },
+
+  {
+    "_id": "U112",
+    "firstName": "Jame",
+    "lastName": "hudson",
+    "loginId": "huds",
+    "section": "CS1234.03",
+    "role": "Admin",
+    "lastActivity": "30 minutes ago",
+    "totalActivity": "16 hrs"
   }
 ]
