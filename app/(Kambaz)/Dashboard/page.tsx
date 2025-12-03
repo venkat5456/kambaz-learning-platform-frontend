@@ -17,24 +17,16 @@ import { RootState } from "../store";
 
 import * as coursesClient from "../Courses/client";
 
-// ⭐ NEW — REMOVE OLD ENROLL CLIENT
-// import * as enrollClient from "../Enrollments/client";
+// ⭐ Use the SAME Course type as backend client
+import type { Course } from "../Courses/client";
 
-// ⭐ NEW — USE THESE INSTEAD
+// Remove OLD enroll client
 import {
   enrollIntoCourse,
   unenrollFromCourse,
 } from "../Courses/client";
 
-// ---------------- TYPES ----------------
-interface Course {
-  _id: string;
-  name: string;
-  description: string;
-  image: string;
-}
-
-// Safe transformer
+// ---------------- SAFE TRANSFORMER ----------------
 const toSafeCourse = (c: unknown): Course => {
   const course = c as Partial<Course>;
   return {
@@ -66,7 +58,7 @@ export default function Dashboard() {
     // Students → load *their* courses from MongoDB
     if (!isFaculty && currentUser?._id) {
       const myCourses = await coursesClient.findMyCourses();
-      setEnrolledCourseIds(myCourses.map((c: Course) => c._id));
+      setEnrolledCourseIds(myCourses.map((c: Course) => c._id ?? ""));
     }
   };
 
@@ -112,9 +104,9 @@ export default function Dashboard() {
   };
 
   // ---------------- FILTER ----------------
-  const myCourses = courses.filter((c) => enrolledCourseIds.includes(c._id));
+  const myCourses = courses.filter((c) => enrolledCourseIds.includes(c._id ?? ""));
   const availableCourses = courses.filter(
-    (c) => !enrolledCourseIds.includes(c._id)
+    (c) => !enrolledCourseIds.includes(c._id ?? "")
   );
 
   // ---------------- UI ----------------
@@ -181,7 +173,7 @@ export default function Dashboard() {
                   <CardImg src="/images/reactjs.jpg" height={160} />
                   <CardBody>
                     <CardTitle>{c.name}</CardTitle>
-                    <Button variant="success" onClick={() => enroll(c._id)}>
+                    <Button variant="success" onClick={() => enroll(c._id ?? "")}>
                       Enroll
                     </Button>
                   </CardBody>
@@ -212,7 +204,7 @@ export default function Dashboard() {
                         className="btn btn-danger mt-2"
                         onClick={(e) => {
                           e.preventDefault();
-                          deleteCourseById(c._id);
+                          deleteCourseById(c._id ?? "");
                         }}
                       >
                         Delete
