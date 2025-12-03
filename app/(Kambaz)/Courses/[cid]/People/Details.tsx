@@ -6,14 +6,15 @@ import { FaPencil, FaCheck } from "react-icons/fa6";
 import { IoCloseSharp } from "react-icons/io5";
 import { FormControl } from "react-bootstrap";
 import * as client from "../../../Account/client";
-import type { User } from "../../../Account/client";   // ⭐ ADDED (only change #1)
+import type { User } from "../../../Account/client";
 
-export default function PeopleDetails({ uid, onClose }) {
-  const [user, setUser] = useState<User>({} as User);  // ⭐ CHANGED any → User (only change #2)
+export default function PeopleDetails(
+  { uid, onClose }: { uid: string | null; onClose: () => void }   // ⭐ FIXED PROPS TYPE
+) {
+  const [user, setUser] = useState<User>({} as User);
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
 
-  // LOAD THE USER
   const fetchUser = async () => {
     if (!uid) return;
     const data = await client.findUserById(uid);
@@ -27,14 +28,11 @@ export default function PeopleDetails({ uid, onClose }) {
 
   if (!uid) return null;
 
-  // SAVE USER
   const saveUser = async () => {
     const [firstName, ...rest] = name.trim().split(" ");
     const lastName = rest.join(" ");
-
     const updatedUser = { ...user, firstName, lastName };
 
-    // ⭐ FIXED — must send (id, body)
     await client.updateUser(updatedUser._id!, updatedUser);
 
     setUser(updatedUser);
@@ -58,14 +56,12 @@ export default function PeopleDetails({ uid, onClose }) {
         style={{ cursor: "pointer" }}
       />
 
-      {/* PROFILE ICON */}
       <div className="text-center mt-4 mb-3">
         <FaUserCircle className="text-secondary" style={{ fontSize: "65px" }} />
       </div>
 
       <hr />
 
-      {/* NAME + EDIT */}
       <div className="position-relative mb-4">
         {!editing && (
           <FaPencil
@@ -99,16 +95,11 @@ export default function PeopleDetails({ uid, onClose }) {
             value={name}
             autoFocus
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                saveUser(); // ⭐ ENTER NOW WORKS
-              }
-            }}
+            onKeyDown={(e) => { if (e.key === "Enter") saveUser(); }}
           />
         )}
       </div>
 
-      {/* DETAILS */}
       <div className="mt-2">
         <b>Role:</b> {user.role || "—"} <br />
         <b>Login ID:</b> {user.username || "—"} <br />
@@ -119,13 +110,8 @@ export default function PeopleDetails({ uid, onClose }) {
       <hr className="mt-4" />
 
       <div className="d-flex justify-content-end gap-2">
-        <button className="btn btn-secondary" onClick={onClose}>
-          Cancel
-        </button>
-
-        <button className="btn btn-danger" onClick={deleteUserHandler}>
-          Delete
-        </button>
+        <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+        <button className="btn btn-danger" onClick={deleteUserHandler}>Delete</button>
       </div>
     </div>
   );
