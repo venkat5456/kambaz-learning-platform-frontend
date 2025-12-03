@@ -52,10 +52,14 @@ export default function Home() {
 
 
   const handleUnenroll = async () => {
-    if (!enrollmentId) return;
-    await unenrollUserFromCourse(enrollmentId);
-    setEnrollmentId(null);
-  };
+  if (!currentUser?._id || !cid) return;
+
+  const courseId = Array.isArray(cid) ? cid[0] : cid; 
+
+  await unenrollUserFromCourse(currentUser._id, courseId);
+  setEnrollmentId(null);
+};
+
 
   // ⭐ SHOW COMPACT ENROLL BUTTON
   if (isStudent && !enrollmentId) {
