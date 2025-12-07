@@ -108,21 +108,25 @@ export const unenrollFromCourse = async (userId: string, courseId: string) => {
   return data;
 };
 
-// Update module
-export const updateModule = async (module: Module): Promise<Module[]> => {
-  if (!module._id) throw new Error("Module _id is required for update");
+export const updateModule = async (
+  cid: string,
+  module: Module
+): Promise<Module[]> => {
   const { data } = await axiosWithCredentials.put(
-    `${MODULES_API}/${module._id}`,
+    `${HTTP_SERVER}/api/courses/${cid}/modules/${module._id}`,
     module
   );
   return data;
 };
 
-// Delete module
-export const deleteModule = async (moduleId: string): Promise<Module[]> => {
-  const { data } = await axiosWithCredentials.delete(`${MODULES_API}/${moduleId}`);
+
+export const deleteModule = async (cid: string, moduleId: string) => {
+  const { data } = await axiosWithCredentials.delete(
+    `${HTTP_SERVER}/api/courses/${cid}/modules/${moduleId}`
+  );
   return data;
 };
+
 
 // -----------------------------------
 // ⭐️ 6.4.3.5 — GET USERS ENROLLED IN A COURSE

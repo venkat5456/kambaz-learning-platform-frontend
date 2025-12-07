@@ -11,12 +11,13 @@ export interface User {
   email?: string;
   dob?: string;
   role?: "STUDENT" | "FACULTY" | "USER" | "ADMIN";
-  section?: string;        
-  totalActivity?: number; 
+  section?: string;
+  totalActivity?: number;
   [key: string]: unknown;
 }
 
-const axiosWithCredentials = axios.create({ withCredentials: true });
+// ⭐ FIX: Export axiosWithCredentials
+export const axiosWithCredentials = axios.create({ withCredentials: true });
 
 export const HTTP_SERVER =
   process.env.NEXT_PUBLIC_HTTP_SERVER || "http://localhost:4000";
@@ -77,7 +78,6 @@ export const updateUser = async (userId: string, updates: User) => {
   );
   return response.data;
 };
-
 
 export const deleteUser = async (userId: string) => {
   const response = await axiosWithCredentials.delete(`${USERS_API}/${userId}`);

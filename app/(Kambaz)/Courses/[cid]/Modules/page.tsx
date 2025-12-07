@@ -76,26 +76,30 @@ export default function ModulesPage() {
   };
 
   const onUpdateModule = async (module: Partial<Module>) => {
-    if (!isFaculty) return alert("❌ Students cannot update modules!");
+  if (!isFaculty) return alert("❌ Students cannot update modules!");
 
-    const updatedPayload: Module = toSafeModule(module);
+  const updatedPayload: Module = toSafeModule(module);
 
-    await client.updateModule(updatedPayload);
+  await client.updateModule(cid as string, updatedPayload);  // ✅ FIXED
 
-    dispatch(
-      setModules(
-        modules.map((m) =>
-          m._id === module._id ? { ...m, ...updatedPayload } : m
-        )
+  dispatch(
+    setModules(
+      modules.map((m) =>
+        m._id === module._id ? { ...m, ...updatedPayload } : m
       )
-    );
-  };
+    )
+  );
+};
+
 
   const onRemoveModule = async (moduleId: string) => {
-    if (!isFaculty) return alert("❌ Students cannot delete modules!");
-    await client.deleteModule(moduleId);
-    dispatch(setModules(modules.filter((m) => m._id !== moduleId)));
-  };
+  if (!isFaculty) return alert("❌ Students cannot delete modules!");
+
+  await client.deleteModule(cid as string, moduleId);   // ✅ FIXED
+
+  dispatch(setModules(modules.filter((m) => m._id !== moduleId)));
+};
+
 
   return (
     <div className="p-3 wd-modules">
